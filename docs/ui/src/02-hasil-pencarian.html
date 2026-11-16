@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>Hasil Pencarian</title>
+<link rel="stylesheet" href="style.css"><script src="shell.js"></script>
+<style>
+.search { max-width: none; flex: none; box-shadow: 0 0 0 2px var(--primary), var(--shadow); padding: 14px 18px; }
+.meta { display: flex; align-items: center; gap: 10px; }
+.meta h2 { font-size: 20px; }
+.res { display: flex; flex-direction: column; gap: 10px; }
+.r { background: #fff; border-radius: 14px; padding: 14px 20px; display: grid; grid-template-columns: 110px 1fr auto 28px; align-items: center; gap: 18px; box-shadow: var(--shadow); }
+.r .mono { color: var(--primary); font-size: 14px; }
+.r b { font-size: 14px; display: block; }
+.r small { color: var(--muted); font-size: 11.5px; }
+.r mark { background: #FFF1C2; color: inherit; border-radius: 3px; padding: 0 2px; }
+.r .ic-r { color: #C3C7DA; }
+.r.group { background: #F0F2FD; box-shadow: none; }
+.r.group .lv { font-size: 11px; font-weight: 700; color: var(--primary); background: #fff; padding: 3px 9px; border-radius: 6px; white-space: nowrap; }
+.r.hl { background: var(--primary); color: #fff; box-shadow: 0 10px 24px rgba(84,104,231,.35); }
+.r.hl .mono, .r.hl small, .r.hl .ic-r, .r.hl .pg { color: #fff; }
+.r.hl mark { background: rgba(255,255,255,.25); }
+.pg { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.hint { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.hint svg.ic { width: 15px; height: 15px; }
+</style></head>
+<body>
+<div class="app">
+  <aside class="sidebar" data-active="cari"></aside>
+  <main class="main">
+    <div class="search"><i data-i="search"></i><span style="color:var(--text);font-weight:500">perjalanan dinas</span><i data-i="x"></i></div>
+    <div class="meta"><h2>8 hasil</h2><span class="muted">untuk “perjalanan dinas”</span><div class="spacer"></div>
+      <span class="chip on">Semua 8</span><span class="chip">Jenis arsip 6</span><span class="chip">Sub-judul 2</span></div>
+
+    <div class="res">
+      <div class="r group"><span class="mono">000.1.2</span><div><b><mark>Perjalanan Dinas</mark> Dalam Negeri</b><small>000 Umum › 000.1 Ketatausahaan dan Kerumahtanggaan</small></div><span class="lv">Sub-judul · 3 anak</span><i data-i="chev" class="ic-r"></i></div>
+      <div class="r"><span class="mono">000.1.2.1</span><div><b><mark>Perjalanan Dinas</mark> Kepala Daerah</b><small>000.1 Ketatausahaan › 000.1.2 Perjalanan Dinas Dalam Negeri</small></div><span class="pg">hlm 11</span><i data-i="copy" class="ic-r"></i></div>
+      <div class="r"><span class="mono">000.1.2.2</span><div><b><mark>Perjalanan Dinas</mark> DPRD</b><small>000.1 Ketatausahaan › 000.1.2 Perjalanan Dinas Dalam Negeri</small></div><span class="pg">hlm 11</span><i data-i="copy" class="ic-r"></i></div>
+      <div class="r hl"><span class="mono">000.1.2.3</span><div><b><mark>Perjalanan Dinas</mark> Pegawai</b><small>000.1 Ketatausahaan › 000.1.2 Perjalanan Dinas Dalam Negeri</small></div><span class="pg">hlm 11</span><i data-i="copy" class="ic-r"></i></div>
+      <div class="r group"><span class="mono">000.1.3</span><div><b><mark>Perjalanan Dinas</mark> Luar Negeri</b><small>000 Umum › 000.1 Ketatausahaan dan Kerumahtanggaan</small></div><span class="lv">Sub-judul · 3 anak</span><i data-i="chev" class="ic-r"></i></div>
+      <div class="r"><span class="mono">000.1.3.1</span><div><b><mark>Perjalanan Dinas</mark> Kepala Daerah</b><small>000.1 Ketatausahaan › 000.1.3 Perjalanan Dinas Luar Negeri</small></div><span class="pg">hlm 11</span><i data-i="copy" class="ic-r"></i></div>
+      <div class="r"><span class="mono">000.1.3.2</span><div><b><mark>Perjalanan Dinas</mark> DPRD</b><small>000.1 Ketatausahaan › 000.1.3 Perjalanan Dinas Luar Negeri</small></div><span class="pg">hlm 11</span><i data-i="copy" class="ic-r"></i></div>
+      <div class="r"><span class="mono">000.1.3.3</span><div><b><mark>Perjalanan Dinas</mark> Pegawai</b><small>000.1 Ketatausahaan › 000.1.3 Perjalanan Dinas Luar Negeri</small></div><span class="pg">hlm 11</span><i data-i="copy" class="ic-r"></i></div>
+    </div>
+    <div class="hint"><i data-i="info"></i>Klik ikon salin untuk menyalin kode. Klik sub-judul untuk melihat anak-anaknya.</div>
+  </main>
+</div>
+</body></html>

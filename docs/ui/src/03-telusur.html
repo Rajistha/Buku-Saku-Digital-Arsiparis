@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>Telusur Klasifikasi</title>
+<link rel="stylesheet" href="style.css"><script src="shell.js"></script>
+<style>
+.main { gap: 16px; padding-top: 24px; }
+.ttl h2 { font-size: 22px; }
+.crumb { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+.crumb svg.ic { width: 13px; height: 13px; }
+.crumb b { color: var(--text); font-weight: 600; }
+.miller { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); height: 372px; overflow: hidden; position: relative; }
+.miller::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 36px; background: linear-gradient(transparent, #fff); pointer-events: none; }
+.mc { border-right: 1px solid var(--border); padding: 8px 8px 0; overflow: hidden; }
+.mc:last-child { border: 0; }
+.mc h6 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #B4B8CC; padding: 4px 10px 8px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.it { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 10px; font-size: 12.5px; line-height: 1.25; }
+.it .mono { color: var(--primary); font-size: 11px; }
+.it .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.it .t .mono { margin-right: 6px; }
+.it svg.ic { width: 14px; height: 14px; color: #C3C7DA; flex: none; }
+.it .n { font-size: 10.5px; color: var(--muted); background: #F1F2F9; border-radius: 10px; padding: 1px 7px; flex: none; }
+.it.path { background: var(--primary-50); color: var(--primary-600); font-weight: 600; }
+.it.path svg.ic { color: var(--primary); }
+.it.sel { background: var(--primary); color: #fff; font-weight: 600; box-shadow: 0 8px 18px rgba(84,104,231,.3); }
+.it.sel .mono { color: #fff; }
+.mc:first-child .it { padding: 4px 8px; }
+.mc:first-child .it .bi { width: 24px; height: 24px; border-radius: 7px; flex: none; }
+.mc:first-child .it .bi svg.ic { width: 12px; height: 12px; color: #fff; }
+.detail { display: grid; grid-template-columns: 1.05fr 1fr; gap: 28px; padding: 20px 26px; align-items: start; }
+.detail .kode { font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+.detail h3 { font-size: 19px; margin: 2px 0 12px; }
+.kv { display: grid; grid-template-columns: 70px 1fr; gap: 8px; font-size: 13px; }
+.kv dt { color: var(--muted); }
+.acts { display: flex; gap: 10px; margin-top: 16px; }
+.ur { background: #F7F8FE; border-radius: 12px; padding: 14px 16px; font-size: 12.5px; line-height: 1.6; }
+.ur b { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--primary); margin-bottom: 6px; }
+</style></head>
+<body>
+<div class="app">
+  <aside class="sidebar" data-active="telusur"></aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="ttl"><h2>Telusur Klasifikasi</h2>
+        <div class="crumb"><b>000 Umum</b><i data-i="chev"></i><b>000.5 Kearsipan</b><i data-i="chev"></i><b>000.5.6 Penyusutan Arsip</b><i data-i="chev"></i><b style="color:var(--primary)">000.5.6.2 Pemusnahan Arsip</b></div></div>
+    </div>
+
+    <div class="card miller">
+      <div class="mc">
+        <h6>1 · Bidang</h6>
+        <div class="it path"><div class="bi g000"><i data-i="b000"></i></div><span class="mono">000</span><span class="t">Umum</span><i data-i="chev"></i></div>
+        <div class="it"><div class="bi g100"><i data-i="b100"></i></div><span class="mono">100</span><span class="t">Pemerintahan</span></div>
+        <div class="it"><div class="bi g200"><i data-i="b200"></i></div><span class="mono">200</span><span class="t">Politik</span></div>
+        <div class="it"><div class="bi g300"><i data-i="b300"></i></div><span class="mono">300</span><span class="t">Keamanan & Ketertiban</span></div>
+        <div class="it"><div class="bi g400"><i data-i="b400"></i></div><span class="mono">400</span><span class="t">Kesejahteraan Rakyat</span></div>
+        <div class="it"><div class="bi g500"><i data-i="b500"></i></div><span class="mono">500</span><span class="t">Perekonomian</span></div>
+        <div class="it"><div class="bi g600"><i data-i="b600"></i></div><span class="mono">600</span><span class="t">Pekerjaan Umum</span></div>
+        <div class="it"><div class="bi g700"><i data-i="b700"></i></div><span class="mono">700</span><span class="t">Pengawasan</span></div>
+        <div class="it"><div class="bi g800"><i data-i="b800"></i></div><span class="mono">800</span><span class="t">Kepegawaian</span></div>
+        <div class="it"><div class="bi g900"><i data-i="b900"></i></div><span class="mono">900</span><span class="t">Keuangan</span></div>
+      </div>
+      <div class="mc">
+        <h6>2 · Sub-bidang</h6>
+        <div class="it"><span class="t"><span class="mono">000.1</span>Ketatausahaan dan Kerumahtanggaan</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.2</span>Perlengkapan</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.3</span>Pengadaan</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.4</span>Perpustakaan</span><i data-i="chev"></i></div>
+        <div class="it path"><span class="t"><span class="mono">000.5</span>Kearsipan</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.6</span>Persandian</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.7</span>Perencanaan Pembangunan</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.8</span>Organisasi dan Tata Laksana</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.9</span>Penelitian dan Pengembangan</span><i data-i="chev"></i></div>
+      </div>
+      <div class="mc">
+        <h6>3 · Kelompok</h6>
+        <div class="it"><span class="t"><span class="mono">000.5.1</span>Kebijakan di bidang kearsipan</span></div>
+        <div class="it"><span class="t"><span class="mono">000.5.2</span>Pembinaan Kearsipan</span><span class="n">11</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.5.3</span>Pengelolaan Arsip Dinamis</span><span class="n">5</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.5.4</span>Program Arsip Vital</span></div>
+        <div class="it"><span class="t"><span class="mono">000.5.5</span>Pengelolaan Arsip Terjaga</span></div>
+        <div class="it path"><span class="t"><span class="mono">000.5.6</span>Penyusutan Arsip</span><span class="n">3</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.5.7</span>Alih Media Arsip</span></div>
+        <div class="it"><span class="t"><span class="mono">000.5.8</span>Data Base Arsip Dinamis</span><span class="n">2</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.5.9</span>Pengelolaan Arsip Statis</span><span class="n">9</span><i data-i="chev"></i></div>
+        <div class="it"><span class="t"><span class="mono">000.5.10</span>Jasa Kearsipan</span></div>
+      </div>
+      <div class="mc">
+        <h6>4 · Jenis arsip</h6>
+        <div class="it"><span class="t"><span class="mono">000.5.6.1</span>Pemindahan Arsip</span></div>
+        <div class="it sel"><span class="t"><span class="mono">000.5.6.2</span>Pemusnahan Arsip</span></div>
+        <div class="it"><span class="t"><span class="mono">000.5.6.3</span>Penyerahan Arsip Statis</span></div>
+      </div>
+    </div>
+
+    <section class="card detail">
+      <div>
+        <div class="kode">000.5.6.2<i data-i="copy"></i></div>
+        <h3>Pemusnahan Arsip</h3>
+        <dl class="kv">
+          <dt>Jalur</dt><dd>000 Umum › 000.5 Kearsipan › 000.5.6 Penyusutan Arsip</dd>
+          <dt>Sumber</dt><dd>Lampiran I · hlm 17 PDF</dd>
+        </dl>
+        <div class="acts"><button class="btn primary"><i data-i="copy"></i>Salin Kode</button><button class="btn ghost"><i data-i="file"></i>Buka PDF hlm 17</button></div>
+      </div>
+      <div class="ur"><b>Uraian “antara lain”</b>SK Penetapan Panitia Penilai Arsip, Pertimbangan Panitia Penilai, Permintaan Persetujuan Kepala ANRI untuk pemusnahan arsip dengan retensi sekurang-kurangnya 10 Tahun atau Persetujuan Kepala Daerah selaku Pimpinan Pencipta Arsip untuk pemusnahan arsip dengan retensi di bawah 10 Tahun, Penetapan Arsip Yang Dimusnahkan, Berita Acara Pemusnahan Arsip, Daftar Arsip Yang Dimusnahkan</div>
+    </section>
+  </main>
+</div>
+</body></html>

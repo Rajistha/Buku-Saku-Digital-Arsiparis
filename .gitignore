@@ -1,0 +1,26 @@
+# dependensi & hasil build
+node_modules/
+dist/
+
+# rahasia & konfigurasi lokal
+.env
+.env.*
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# editor & sistem operasi
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# log & berkas sementara
+*.log
+*.tmp
+web/.shots/

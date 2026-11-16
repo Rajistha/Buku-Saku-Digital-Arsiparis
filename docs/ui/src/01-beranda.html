@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>Beranda</title>
+<link rel="stylesheet" href="style.css"><script src="shell.js"></script>
+<style>
+.main { gap: 20px; }
+.hero { background: var(--primary); border-radius: 20px; color: #fff; padding: 28px 36px 26px; position: relative; overflow: hidden; box-shadow: 0 14px 30px rgba(84,104,231,.28); }
+.hero::before { content: ''; position: absolute; right: -70px; top: -90px; width: 320px; height: 320px; border-radius: 50%; background: rgba(255,255,255,.08); }
+.hero::after { content: ''; position: absolute; right: 170px; bottom: -110px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,.07); }
+.hero h1 { font-size: 27px; font-weight: 700; line-height: 1.25; position: relative; }
+.hero p { opacity: .9; margin: 6px 0 20px; line-height: 1.55; position: relative; }
+.bigsearch { background: #fff; border-radius: 14px; padding: 6px 6px 6px 18px; display: flex; align-items: center; gap: 12px; color: var(--muted); max-width: 680px; position: relative; box-shadow: 0 10px 24px rgba(30,34,64,.18); z-index: 1; }
+.bigsearch span { flex: 1; font-size: 14.5px; }
+.bigsearch .btn { padding: 12px 24px; }
+.pop { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; position: relative; z-index: 1; }
+.pop .lbl { font-size: 12.5px; opacity: .85; margin-right: 4px; }
+.pop .chip { background: rgba(255,255,255,.16); border-color: transparent; color: #fff; }
+.bidang { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.bidang .card { padding: 14px 14px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.bidang .card .top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.bidang .card .bi { width: 38px; height: 38px; flex: none; }
+.bidang .card b { font-size: 13px; display: block; line-height: 1.3; }
+.bidang .card small { color: var(--muted); font-size: 11.5px; display: block; margin-top: 2px; }
+.bidang .card .mono { color: var(--primary); font-size: 13px; background: var(--primary-50); padding: 3px 8px; border-radius: 6px; }
+.recent { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.recent .card { padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+.recent .mono { color: var(--primary); font-size: 12px; display: block; }
+.recent b { font-size: 12.5px; display: block; line-height: 1.3; }
+.recent svg.ic { margin-left: auto; color: #C3C7DA; }
+</style></head>
+<body>
+<div class="app">
+  <aside class="sidebar" data-active="beranda"></aside>
+
+  <main class="main">
+    <section class="hero">
+      <h1>Cari kode klasifikasi arsip</h1>
+      <p>2.989 kode dan nama klasifikasi dari Pergub Bali Nomor 64 Tahun 2023.</p>
+      <div class="bigsearch"><i data-i="search"></i><span>Ketik kode atau nama, mis. “perjalanan dinas” atau 000.1.2</span><button class="btn primary">Cari</button></div>
+      <div class="pop"><span class="lbl">Coba:</span><span class="chip">perjalanan dinas</span><span class="chip">pemberhentian</span><span class="chip">anggaran</span><span class="chip">pengadaan</span></div>
+    </section>
+
+    <section class="col" style="gap:12px">
+      <div class="section-h"><h3>Telusuri per bidang</h3></div>
+      <div class="bidang">
+        <div class="card"><div class="top"><div class="bi g000"><i data-i="b000"></i></div><span class="mono">000</span></div><div><b>Umum</b><small>235 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g100"><i data-i="b100"></i></div><span class="mono">100</span></div><div><b>Pemerintahan</b><small>75 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g200"><i data-i="b200"></i></div><span class="mono">200</span></div><div><b>Politik</b><small>88 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g300"><i data-i="b300"></i></div><span class="mono">300</span></div><div><b>Keamanan dan Ketertiban</b><small>41 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g400"><i data-i="b400"></i></div><span class="mono">400</span></div><div><b>Kesejahteraan Rakyat</b><small>736 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g500"><i data-i="b500"></i></div><span class="mono">500</span></div><div><b>Perekonomian</b><small>1.306 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g600"><i data-i="b600"></i></div><span class="mono">600</span></div><div><b>Pekerjaan Umum dan Ketenagaan</b><small>285 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g700"><i data-i="b700"></i></div><span class="mono">700</span></div><div><b>Pengawasan</b><small>18 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g800"><i data-i="b800"></i></div><span class="mono">800</span></div><div><b>Kepegawaian</b><small>120 kode</small></div></div>
+        <div class="card"><div class="top"><div class="bi g900"><i data-i="b900"></i></div><span class="mono">900</span></div><div><b>Keuangan</b><small>85 kode</small></div></div>
+      </div>
+    </section>
+
+    <section class="col" style="gap:12px">
+      <div class="section-h"><h3>Terakhir dilihat</h3></div>
+      <div class="recent">
+        <div class="card"><div><span class="mono">000.1.2.3</span><b>Perjalanan Dinas Pegawai</b></div><i data-i="chev"></i></div>
+        <div class="card"><div><span class="mono">000.5.6.2</span><b>Pemusnahan Arsip</b></div><i data-i="chev"></i></div>
+        <div class="card"><div><span class="mono">800.1.6.4</span><b>Pemberhentian Dengan Tidak Hormat</b></div><i data-i="chev"></i></div>
+        <div class="card"><div><span class="mono">900.1.2</span><b>Penyusunan Anggaran</b></div><i data-i="chev"></i></div>
+      </div>
+    </section>
+  </main>
+</div>
+</body></html>

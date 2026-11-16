@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>Lembar Logo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+:root { --primary:#5468E7; --deep:#2B37A8; --gold:#FFC861; --ink:#1E2240; --bg:#F5F6FD; --muted:#8A90A8; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1440px; height: 900px; overflow: hidden; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #E9EAFB; color: var(--ink); display: grid; place-items: center; }
+.sheet { width: 1320px; height: 800px; background: #fff; border-radius: 28px; box-shadow: 0 30px 80px rgba(84,104,231,.22); display: grid; grid-template-columns: 470px 1fr; overflow: hidden; }
+.left { background: var(--bg); padding: 40px 44px; display: flex; flex-direction: column; }
+.tag { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.big { width: 300px; height: 300px; margin: 24px auto 28px; filter: drop-shadow(0 22px 30px rgba(62,79,211,.35)); }
+.big svg { width: 100%; height: 100%; display: block; }
+.left h2 { font-size: 20px; margin-bottom: 14px; }
+.pts { list-style: none; display: grid; gap: 12px; font-size: 13px; line-height: 1.5; color: #4A4F6C; }
+.pts li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; }
+.pts i { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 800; color: #fff; }
+.pts b { color: var(--ink); }
+.right { padding: 40px 48px; display: flex; flex-direction: column; gap: 22px; }
+.panel { border-radius: 20px; display: flex; align-items: center; padding: 0 44px; height: 170px; }
+.panel.light { background: #fff; border: 1.5px solid #ECEEF6; }
+.panel.dark { background: var(--ink); }
+.panel svg.lockup { height: 84px; width: auto; }
+.row { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; }
+.sizes { display: flex; align-items: flex-end; gap: 22px; margin-top: 12px; }
+.sizes div { text-align: center; font-size: 10.5px; color: var(--muted); font-family: 'JetBrains Mono'; }
+.sizes svg { display: block; margin: 0 auto 6px; }
+.sw { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 12px; }
+.sw div { font-size: 10.5px; color: var(--muted); font-family: 'JetBrains Mono'; line-height: 1.5; }
+.sw span { display: block; height: 46px; border-radius: 10px; margin-bottom: 6px; border: 1px solid rgba(0,0,0,.05); }
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7283F5"/><stop offset="1" stop-color="#3E4FD3"/></linearGradient></defs>
+  <symbol id="mk" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+    <path d="M17 14a4 4 0 0 1 4-4h22a4 4 0 0 1 4 4v30H17z" fill="#FFFFFF"/>
+    <path d="M17 14a4 4 0 0 1 4-4h1.6v34H17z" fill="#D9DFFF"/>
+    <path d="M41 10h5v13.5l-2.5-2.3L41 23.5z" fill="#FFC861"/>
+    <path d="M34 20.5 28.6 30.6M34 20.5 38.8 30.6" stroke="#5468E7" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <g fill="#5468E7"><circle cx="34" cy="19.6" r="2.6"/><circle cx="28.6" cy="30.6" r="2.3"/><circle cx="38.8" cy="30.6" r="2.3"/></g>
+    <path d="M12.5 38h39v9.2L32 56 12.5 47.2z" fill="#2B37A8" stroke="#2B37A8" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M17 42h30v3.6L32 51.6 17 45.6z" fill="none" stroke="#8FA0FF" stroke-width="1.3" stroke-linejoin="round" stroke-dasharray="2.6 2.2"/>
+  </symbol>
+</svg>
+
+<div class="sheet">
+  <div class="left">
+    <div class="tag">Logo · Ikon aplikasi</div>
+    <div class="big"><svg viewBox="0 0 64 64"><use href="#mk"/></svg></div>
+    <h2>Buku saku dalam saku</h2>
+    <ul class="pts">
+      <li><i style="background:var(--primary)">1</i><span><b>Buku kecil di dalam saku.</b> Menggambarkan “buku saku”: ringkas dan selalu dibawa.</span></li>
+      <li><i style="background:var(--primary)">2</i><span><b>Pohon tiga titik di sampul.</b> Kode klasifikasi berjenjang: bidang → sub-bidang → jenis arsip.</span></li>
+      <li><i style="background:#E8A100">3</i><span><b>Penanda halaman emas.</b> Setiap kode merujuk ke halaman di Pergub.</span></li>
+    </ul>
+  </div>
+
+  <div class="right">
+    <div>
+      <div class="tag">Versi horizontal</div>
+    </div>
+    <div class="panel light">
+      <svg class="lockup" viewBox="0 0 440 96"><use href="#mk" width="96" height="96"/>
+        <text x="118" y="46" font-family="'Plus Jakarta Sans'" font-size="31" font-weight="800" fill="#1E2240" letter-spacing="-0.4">Buku Saku Digital</text>
+        <text x="119" y="72" font-family="'Plus Jakarta Sans'" font-size="14.5" font-weight="700" fill="#5468E7" letter-spacing="4.2">PEMPROV BALI</text></svg>
+    </div>
+    <div class="panel dark">
+      <svg class="lockup" viewBox="0 0 440 96"><use href="#mk" width="96" height="96"/>
+        <text x="118" y="46" font-family="'Plus Jakarta Sans'" font-size="31" font-weight="800" fill="#FFFFFF" letter-spacing="-0.4">Buku Saku Digital</text>
+        <text x="119" y="72" font-family="'Plus Jakarta Sans'" font-size="14.5" font-weight="700" fill="#AAB6FF" letter-spacing="4.2">PEMPROV BALI</text></svg>
+    </div>
+
+    <div class="row">
+      <div>
+        <div class="tag">Ukuran ikon</div>
+        <div class="sizes">
+          <div><svg width="96" height="96" viewBox="0 0 64 64"><use href="#mk"/></svg>96</div>
+          <div><svg width="64" height="64" viewBox="0 0 64 64"><use href="#mk"/></svg>64</div>
+          <div><svg width="48" height="48" viewBox="0 0 64 64"><use href="#mk"/></svg>48</div>
+          <div><svg width="32" height="32" viewBox="0 0 64 64"><use href="#mk"/></svg>32</div>
+          <div><svg width="16" height="16" viewBox="0 0 64 64"><use href="#mk"/></svg>16</div>
+        </div>
+      </div>
+      <div>
+        <div class="tag">Warna</div>
+        <div class="sw">
+          <div><span style="background:#5468E7"></span>Indigo<br>#5468E7</div>
+          <div><span style="background:#2B37A8"></span>Saku<br>#2B37A8</div>
+          <div><span style="background:#FFC861"></span>Emas<br>#FFC861</div>
+          <div><span style="background:#1E2240"></span>Tinta<br>#1E2240</div>
+          <div><span style="background:#F5F6FD"></span>Latar<br>#F5F6FD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>
