@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type PointerEvent as PE } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import * as pdfjs from 'pdfjs-dist'
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist'
@@ -10,6 +10,10 @@ import { useOnline } from '../pwa.tsx'
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
 const PDF = 'pergub-64-2023.pdf'
+const ZOOM_MIN = 1
+const ZOOM_MAX = 4
+const LANGKAH = [1, 1.5, 2, 3, 4]
+const batas = (z: number) => Math.min(Math.max(z, ZOOM_MIN), ZOOM_MAX)
 
 // Dokumen disimpan selama aplikasi terbuka: membuka penampil lagi (atau pindah ke kode lain)
 // tidak mengunduh ulang. Untuk PDF ini pembukaan pertama ±7 MB karena satu bagian besar yang
@@ -44,6 +48,13 @@ export default function PdfViewer() {
   const area = useRef<HTMLDivElement>(null)
   const halamanEl = useRef<HTMLDivElement>(null)
   const kanvas = useRef<HTMLCanvasElement>(null)
+  // zoom: `zoom` mengubah ukuran tampilan seketika, `zoomGambar` (tertunda) menentukan resolusi gambar
+  const [zoom, setZoom] = useState(1)
+  const [zoomGambar, setZoomGambar] = useState(1)
+  const zoomRef = useRef(1)
+  const geserTertunda = useRef<{ left: number; top: number } | null>(null)
+  const jari = useRef(new Map<number, { x: number; y: number }>())
+  const gestur = useRef({ jarak: 0, zoom: 1, cubit: false, x: 0, y: 0, t: 0, tapT: 0 })
 
   const total = doc?.numPages ?? 0
   const diminta = Math.max(1, Math.floor(Number(hlm)) || 1)
@@ -92,8 +103,9 @@ export default function PdfViewer() {
       if (batal || !cv) return
       const dasar = page.getViewport({ scale: 1 })
       // resolusi lebih tinggi agar tetap tajam saat layar dicubit/diperbesar
-      const kualitas = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3)
-      const vp = page.getViewport({ scale: (lebar / dasar.width) * kualitas })
+      const tampil = lebar * zoomGambar
+      const kualitas = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3, Math.max(1, 4096 / tampil))
+      const vp = page.getViewport({ scale: (tampil / dasar.width) * kualitas })
       cv.width = Math.floor(vp.width)
       cv.height = Math.floor(vp.height)
       tugas = page.render({ canvas: cv, viewport: vp })
@@ -107,7 +119,7 @@ export default function PdfViewer() {
       batal = true
       tugas?.cancel()
     }
-  }, [doc, halaman, lebar])
+  }, [doc, halaman, lebar, zoomGambar])
 
   // kurung kurawal: nilai kembalian efek dianggap fungsi pembersih oleh React (scrollTo mengembalikan Promise)
   useEffect(() => {
@@ -117,14 +129,102 @@ export default function PdfViewer() {
     area.current?.scrollTo(0, 0)
   }, [halaman])
 
+  // pertahankan titik yang dicubit/diketuk tetap di tempatnya setelah ukuran berubah
+  useLayoutEffect(() => {
+    const g = geserTertunda.current
+    if (g && area.current) {
+      area.current.scrollLeft = g.left
+      area.current.scrollTop = g.top
+    }
+    geserTertunda.current = null
+  }, [zoom])
+  // gambar ulang dengan resolusi baru setelah zoom berhenti berubah
+  useEffect(() => {
+    const t = setTimeout(() => setZoomGambar(zoom), 250)
+    return () => clearTimeout(t)
+  }, [zoom])
+
   const q = kode ? `?k=${encodeURIComponent(kode)}` : ''
   const ke = (n: number) => nav(`/pdf/${Math.min(Math.max(1, n), total || n)}${q}`, { replace: true })
   // replace: tombol Kembali membawa pengguna keluar dari penampil, bukan mundur halaman demi halaman
   const kembali = () => (key !== 'default' ? nav(-1) : nav(kode ? `/telusur/${kode}` : '/', { replace: true }))
 
+  /** ubah zoom dengan titik (koordinat layar) yang dipertahankan; tanpa titik = tengah area */
+  const setZoomDi = (baru: number, cx?: number, cy?: number) => {
+    const el = area.current
+    const z = batas(baru)
+    if (!el || z === zoomRef.current) return
+    const r = el.getBoundingClientRect()
+    const px = (cx ?? r.left + r.width / 2) - r.left
+    const py = (cy ?? r.top + r.height / 2) - r.top
+    const rasio = z / zoomRef.current
+    geserTertunda.current = { left: (el.scrollLeft + px) * rasio - px, top: (el.scrollTop + py) * rasio - py }
+    zoomRef.current = z
+    setZoom(z)
+  }
+  const langkahZoom = (arah: 1 | -1) => {
+    const z = zoomRef.current
+    const tujuan = arah > 0 ? LANGKAH.find((l) => l > z + 0.01) : [...LANGKAH].reverse().find((l) => l < z - 0.01)
+    setZoomDi(tujuan ?? (arah > 0 ? ZOOM_MAX : ZOOM_MIN))
+  }
+
+  const jarakJari = () => {
+    const [a, b] = [...jari.current.values()]
+    return Math.hypot(a.x - b.x, a.y - b.y)
+  }
+  const onDown = (e: PE) => {
+    if (e.pointerType === 'mouse') return
+    jari.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    const g = gestur.current
+    if (jari.current.size === 2) {
+      g.cubit = true
+      g.jarak = jarakJari()
+      g.zoom = zoomRef.current
+    } else if (jari.current.size === 1) {
+      g.cubit = false
+      g.x = e.clientX
+      g.y = e.clientY
+      g.t = Date.now()
+    }
+  }
+  const onMove = (e: PE) => {
+    if (!jari.current.has(e.pointerId)) return
+    jari.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    const g = gestur.current
+    if (jari.current.size === 2 && g.jarak > 0) {
+      const [a, b] = [...jari.current.values()]
+      setZoomDi(g.zoom * (jarakJari() / g.jarak), (a.x + b.x) / 2, (a.y + b.y) / 2)
+    }
+  }
+  const onUp = (e: PE) => {
+    if (!jari.current.delete(e.pointerId)) return
+    const g = gestur.current
+    if (g.cubit) {
+      if (jari.current.size === 0) g.cubit = false
+      return
+    }
+    if (e.type === 'pointercancel') return
+    const dx = e.clientX - g.x
+    const dy = e.clientY - g.y
+    const dt = Date.now() - g.t
+    if (zoomRef.current < 1.05 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5 && dt < 700) {
+      // geser ke kiri = halaman berikutnya
+      if (dx < 0 && halaman < total) ke(halaman + 1)
+      if (dx > 0 && halaman > 1) ke(halaman - 1)
+    } else if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && dt < 300) {
+      const sekarang = Date.now()
+      if (sekarang - g.tapT < 300) {
+        g.tapT = 0
+        setZoomDi(zoomRef.current > 1.05 ? 1 : 2.5, e.clientX, e.clientY)
+      } else g.tapT = sekarang
+    }
+  }
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement | null)?.tagName === 'INPUT') return
+      if (e.key === '+' || e.key === '=') langkahZoom(1)
+      if (e.key === '-') langkahZoom(-1)
       if (e.key === 'ArrowRight' && halaman < total) ke(halaman + 1)
       if (e.key === 'ArrowLeft' && halaman > 1) ke(halaman - 1)
       if (e.key === 'Escape') kembali()
@@ -169,7 +269,14 @@ export default function PdfViewer() {
         </form>
       </header>
 
-      <div className="pdfv-area" ref={area}>
+      <div
+        className={`pdfv-area${zoom > 1.05 ? ' zoom' : ''}`}
+        ref={area}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+      >
         <div className="pdfv-halaman" ref={halamanEl}>
           {status === 'gagal' ? (
             <div className="pdfv-galat">
@@ -193,11 +300,33 @@ export default function PdfViewer() {
                   {doc ? `Memuat halaman ${halaman}…` : 'Memuat PDF… pertama kali bisa ±7 MB'}
                 </div>
               )}
-              <canvas ref={kanvas} className="pdfv-kanvas" aria-label={`Halaman ${halaman} Peraturan Gubernur Bali Nomor 64 Tahun 2023`} />
+              <div className="pdfv-zoom" style={{ width: `${zoom * 100}%` }}>
+                <canvas ref={kanvas} className="pdfv-kanvas" aria-label={`Halaman ${halaman} Peraturan Gubernur Bali Nomor 64 Tahun 2023`} />
+              </div>
             </>
           )}
         </div>
       </div>
+
+      {status !== 'gagal' && (
+        <div className="pdfv-ctl" role="group" aria-label="Zoom dan halaman">
+          <button type="button" disabled={halaman <= 1} onClick={() => ke(halaman - 1)} aria-label="Halaman sebelumnya">
+            <Icon name="chevl" />
+          </button>
+          <button type="button" disabled={zoom <= ZOOM_MIN} onClick={() => langkahZoom(-1)} aria-label="Perkecil">
+            −
+          </button>
+          <button type="button" className="pct" disabled={zoom === 1} onClick={() => setZoomDi(1)} aria-label="Ukuran pas layar">
+            {Math.round(zoom * 100)}%
+          </button>
+          <button type="button" disabled={zoom >= ZOOM_MAX} onClick={() => langkahZoom(1)} aria-label="Perbesar">
+            +
+          </button>
+          <button type="button" disabled={!total || halaman >= total} onClick={() => ke(halaman + 1)} aria-label="Halaman berikutnya">
+            <Icon name="chev" />
+          </button>
+        </div>
+      )}
     </div>
   )
 }

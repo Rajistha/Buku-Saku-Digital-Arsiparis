@@ -233,7 +233,7 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
 .pwa-bar .tutup:hover { opacity: 1; background: rgba(255, 255, 255, .12); }
 
 /* ---------- penampil PDF ---------- */
-.pdfv { height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: #E4E6F4; }
+.pdfv { position: relative; height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: #E4E6F4; }
 .pdfv-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; padding-top: calc(10px + env(safe-area-inset-top)); background: var(--surface); border-bottom: 1px solid var(--border); flex: none; }
 .pdfv-judul { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 10px; white-space: nowrap; overflow: hidden; }
 .pdfv-judul b { font-size: 14px; }
@@ -243,7 +243,13 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
 .pdfv-nav input:focus { border-color: var(--primary); }
 .pdfv-nav .ikon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; background: var(--primary-50); color: var(--primary); }
 .pdfv-nav .ikon:disabled { opacity: .4; cursor: not-allowed; }
-.pdfv-area { flex: 1; overflow: auto; padding: 14px 12px 28px; -webkit-overflow-scrolling: touch; }
+.pdfv-area { flex: 1; overflow: auto; padding: 14px 12px 84px; -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior: contain; }
+.pdfv-area.zoom { touch-action: pan-x pan-y; }
+.pdfv-ctl { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 3; display: flex; align-items: center; gap: 2px; padding: 4px; background: #1E2240; color: #fff; border-radius: 999px; box-shadow: 0 8px 20px rgba(30, 34, 64, .3); }
+.pdfv-ctl button { min-width: 40px; height: 40px; display: grid; place-items: center; border-radius: 999px; font-size: 20px; font-weight: 600; color: #fff; }
+.pdfv-ctl button.pct { font-size: 12.5px; min-width: 52px; }
+.pdfv-ctl button:disabled { opacity: .35; cursor: not-allowed; }
+.pdfv-ctl button:not(:disabled):hover { background: rgba(255, 255, 255, .14); }
 .pdfv-halaman { position: relative; width: 100%; max-width: 900px; margin: 0 auto; min-height: 240px; }
 .pdfv-kanvas { display: block; width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 6px 24px rgba(30, 34, 64, .18); }
 .pdfv-muat { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; align-items: center; gap: 10px; background: #1E2240; color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 600; box-shadow: 0 8px 20px rgba(30, 34, 64, .3); white-space: nowrap; }
