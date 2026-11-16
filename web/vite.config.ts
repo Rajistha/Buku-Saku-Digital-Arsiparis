@@ -36,7 +36,7 @@ export default defineConfig({
       manifest: {
         name: 'Buku Saku Digital Pemprov Bali',
         short_name: 'Buku Saku',
-        description: 'Cari kode dan nama klasifikasi arsip dari Pergub Bali No. 64/2023.',
+        description: 'Cari kode klasifikasi arsip beserta keamanan dan retensinya dari Pergub Bali No. 64/2023.',
         lang: 'id',
         start_url: './',
         scope: './',

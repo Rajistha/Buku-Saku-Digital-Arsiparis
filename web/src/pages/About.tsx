@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTitle } from '../components/ui.tsx'
 import { PdfLink } from '../components/PdfLink.tsx'
 import { InstallButton } from '../pwa.tsx'
-import { BIDANG_FUNGSI, fmt, levelOf } from '../data.ts'
+import { BIDANG_FUNGSI, fmt, hasChildren, levelOf } from '../data.ts'
 import { useData } from '../state.tsx'
 
 export default function About() {
@@ -12,6 +12,20 @@ export default function About() {
 
   const koreksi = useMemo(() => d.items.filter((i) => i.c), [d])
   const subBidang = useMemo(() => d.items.filter((i) => levelOf(i.k) === 2).length, [d])
+  // cakupan keamanan (Lampiran II) dan retensi (Lampiran III), dihitung pada jenis arsip (kode tanpa turunan)
+  const cakupan = useMemo(() => {
+    const daun = d.items.filter((i) => !hasChildren(d, i.k))
+    let kea = 0
+    let ret = 0
+    let ragu = 0
+    for (const i of daun) {
+      const at = d.aturan.get(i.k)
+      if (at?.s) kea++
+      if (at?.rk) ret++
+      else if (at?.q) ragu++
+    }
+    return { jenis: daun.length, kea, ret, ragu, tanpaRet: daun.length - ret - ragu }
+  }, [d])
 
   return (
     <>
@@ -51,7 +65,8 @@ export default function About() {
         <h2>Sumber</h2>
         <p>
           Peraturan Gubernur Bali Nomor 64 Tahun 2023 tentang Klasifikasi Arsip, Klasifikasi Keamanan dan Akses Arsip Dinamis, dan Jadwal Retensi Arsip Pemerintah
-          Daerah, <b>Lampiran I</b> (Klasifikasi Arsip Pemerintah Daerah), halaman 11–149 pada berkas PDF.
+          Daerah. Yang dipakai: <b>Lampiran I</b> Klasifikasi Arsip (halaman 11–149 pada berkas PDF), <b>Lampiran II</b> Klasifikasi Keamanan dan Akses Arsip Dinamis
+          (halaman 150–639), dan <b>Lampiran III</b> Jadwal Retensi Arsip (halaman 640–893).
         </p>
         <h2>Cara data diperiksa</h2>
         <ul>
@@ -60,12 +75,34 @@ export default function About() {
             Istilah di aplikasi: <b>kelompok</b> adalah kode yang punya turunan, <b>jenis arsip</b> adalah kode tanpa turunan.
           </li>
           <li>Tidak ada kode ganda, dan setiap kode (selain bidang) memiliki induk.</li>
-          <li>Kode dibandingkan dengan Lampiran II yang memuat kode yang sama.</li>
+          <li>Kode Lampiran I dibandingkan dengan Lampiran II yang memuat kode yang sama.</li>
           <li>
             Dua loncatan nomor memang ada pada PDF dan tidak diubah: <span className="mono">500.2.2</span> tidak memiliki nomor 9, dan <span className="mono">500.5.7</span> tidak
             memiliki nomor 5.
           </li>
           <li>Sebanyak 20 jenis arsip yang tidak terbaca di Lampiran II belum diperiksa satu per satu. Datanya tetap diambil dari Lampiran I.</li>
+        </ul>
+        <h2>Keamanan, akses, dan retensi</h2>
+        <ul>
+          <li>
+            <b>Keamanan dan akses</b> dibaca dari tabel Lampiran II, lalu dicocokkan ke kode lewat nomor dan nama. {fmt(cakupan.kea)} dari {fmt(cakupan.jenis)} jenis arsip memiliki
+            data. Sisanya tidak punya baris di Lampiran II, karena penomoran Lampiran II berbeda dari Lampiran I pada beberapa bagian.
+          </li>
+          <li>
+            Teks <b>hak akses</b> dan <b>dasar pertimbangan</b> sama untuk setiap kategori keamanan di PDF, sehingga ditampilkan menurut kategorinya.
+          </li>
+          <li>
+            <b>Retensi</b>: Lampiran III tidak memakai kode klasifikasi, melainkan nomor sendiri (I, A, 1, a, …). Nomor itu dihitung ulang menjadi kode, lalu diperiksa dengan
+            kemiripan nama terhadap Lampiran I. Bidang ditentukan dari namanya karena angka Romawi di PDF tidak berurutan.
+          </li>
+          <li>
+            {fmt(cakupan.ret)} jenis arsip memiliki jadwal retensi yang terbaca jelas. {fmt(cakupan.ragu)} jenis arsip memiliki nilai yang bersyarat, bergabung, atau terpotong di PDF,
+            sehingga hanya diberi rujukan halaman Lampiran III. {fmt(cakupan.tanpaRet)} jenis arsip tidak ditemukan di Lampiran III.
+          </li>
+          <li>
+            <b>Belum ditinjau arsiparis.</b> Data keamanan dan retensi diambil otomatis dari PDF dan diperiksa pada sampel. Sebelum dipakai untuk keputusan penyusutan atau pembukaan
+            arsip, cocokkan dengan halaman PDF yang ditautkan pada setiap kode.
+          </li>
         </ul>
       </section>
 

@@ -2,12 +2,19 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Icon } from '../components/Icon.tsx'
 import { CopyButton, Highlight, useTitle } from '../components/ui.tsx'
-import { ancestors, CONTOH, fmt, hasChildren, type Data, type Item } from '../data.ts'
+import { ancestors, CONTOH, fmt, hasChildren, KEAMANAN, nasibOf, type Data, type Item, type Nasib } from '../data.ts'
 import { awalKata, search } from '../search.ts'
 import { useData } from '../state.tsx'
 
 const HALAMAN = 60
 type Saring = 'semua' | 'jenis' | 'kelompok'
+type FilterKea = 'semua' | 'B' | 'T' | 'R'
+type FilterNasib = 'semua' | Nasib
+
+const LABEL_NASIB: Record<Nasib, string> = { permanen: 'Permanen', musnah: 'Musnah', kecuali: 'Musnah, ada pengecualian', lain: 'Lainnya' }
+
+/** Sangat Rahasia dihitung bersama Rahasia pada penyaring. */
+const kelasKea = (s: string | undefined): FilterKea | null => (s === 'B' || s === 'T' ? s : s === 'R' || s === 'S' ? 'R' : null)
 
 /** Potongan uraian di sekitar kata yang cocok. */
 function cuplik(teks: string, terms: string[]): string {
@@ -30,6 +37,9 @@ function Row({ it, d, terms, kodePrefix }: { it: Item; d: Data; terms: string[];
   // cocok hanya lewat uraian: tampilkan potongan uraian agar jelas kenapa muncul
   const lewatUraian = terms.length > 0 && !!it.u && !terms.every((t) => awalKata(it.n.toLowerCase(), t))
   const pre = kodePrefix && it.k.startsWith(kodePrefix) ? kodePrefix : ''
+  const at = d.aturan.get(it.k)
+  const nasib = anak ? null : nasibOf(at?.rk)
+  const tampilKea = !anak && at?.s && at.s !== 'B' ? KEAMANAN[at.s] : null
 
   return (
     <div className={'r' + (anak ? ' group' : '')}>
@@ -54,6 +64,12 @@ function Row({ it, d, terms, kodePrefix }: { it: Item; d: Data; terms: string[];
             </small>
           )}
           <small>{jalur || 'Bidang'}</small>
+          {(tampilKea || nasib) && (
+            <span className="badges">
+              {tampilKea && <span className={`tag s-${at?.s}`}>{tampilKea.nama}</span>}
+              {nasib && <span className={`tag n-${nasib}`}>{at?.rk && at.rk.length < 28 ? at.rk : LABEL_NASIB[nasib]}</span>}
+            </span>
+          )}
         </div>
         {anak ? <span className="lv">Kelompok · {anak} turunan</span> : <span className="pg">hlm {it.h}</span>}
       </Link>
@@ -73,25 +89,67 @@ export default function Search() {
   const [params, setParams] = useSearchParams()
   const q = params.get('q') ?? ''
   const [saring, setSaring] = useState<Saring>('semua')
+  const [kea, setKea] = useState<FilterKea>('semua')
+  const [nas, setNas] = useState<FilterNasib>('semua')
   const [batas, setBatas] = useState(HALAMAN)
 
   const hasil = useMemo(() => search(d, q), [d, q])
   const jumlahKelompok = useMemo(() => hasil.items.filter((i) => hasChildren(d, i.k)).length, [d, hasil])
   const jumlahJenis = hasil.items.length - jumlahKelompok
   const tampil = useMemo(
-    () => hasil.items.filter((i) => (saring === 'semua' ? true : saring === 'kelompok' ? hasChildren(d, i.k) : !hasChildren(d, i.k))),
-    [d, hasil, saring],
+    () =>
+      hasil.items.filter((i) => {
+        if (saring === 'kelompok' ? !hasChildren(d, i.k) : saring === 'jenis' && hasChildren(d, i.k)) return false
+        const at = d.aturan.get(i.k)
+        if (kea !== 'semua' && kelasKea(at?.s) !== kea) return false
+        if (nas !== 'semua' && nasibOf(at?.rk) !== nas) return false
+        return true
+      }),
+    [d, hasil, saring, kea, nas],
   )
+  // jumlah hasil per pilihan penyaring (di antara hasil pencarian yang ada)
+  const hitungKea = useMemo(() => {
+    const c: Record<string, number> = { B: 0, T: 0, R: 0 }
+    for (const i of hasil.items) {
+      const k = kelasKea(d.aturan.get(i.k)?.s)
+      if (k) c[k]++
+    }
+    return c
+  }, [d, hasil])
+  const hitungNasib = useMemo(() => {
+    const c: Record<string, number> = { permanen: 0, musnah: 0, kecuali: 0 }
+    for (const i of hasil.items) {
+      const n = nasibOf(d.aturan.get(i.k)?.rk)
+      if (n && n in c) c[n]++
+    }
+    return c
+  }, [d, hasil])
+  const resetFilter = () => {
+    setSaring('semua')
+    setKea('semua')
+    setNas('semua')
+  }
 
   useEffect(() => {
     setBatas(HALAMAN)
-  }, [q, saring])
+  }, [q, saring, kea, nas])
   useTitle(q.trim() || 'Cari Kode')
 
   const ubah = (v: string) => (v ? setParams({ q: v }, { replace: true }) : setParams({}, { replace: true }))
   const chip = (id: Saring, label: string, n: number) => (
     <button type="button" className={'chip' + (saring === id ? ' on' : '')} aria-pressed={saring === id} onClick={() => setSaring(id)}>
       {label} {fmt(n)}
+    </button>
+  )
+
+  const chipKea = (id: FilterKea, label: string, n: number) => (
+    <button type="button" className={'chip' + (kea === id ? ' on' : '')} aria-pressed={kea === id} onClick={() => setKea(id)} disabled={id !== 'semua' && n === 0}>
+      {label} {id !== 'semua' && fmt(n)}
+    </button>
+  )
+  const chipNasib = (id: FilterNasib, label: string, n: number) => (
+    <button type="button" className={'chip' + (nas === id ? ' on' : '')} aria-pressed={nas === id} onClick={() => setNas(id)} disabled={id !== 'semua' && n === 0}>
+      {label} {id !== 'semua' && fmt(n)}
     </button>
   )
 
@@ -147,6 +205,25 @@ export default function Search() {
             )}
           </div>
 
+          {hasil.items.length > 0 && (
+            <>
+              <div className="chips" role="group" aria-label="Saring menurut keamanan">
+                <span className="lbl">Keamanan</span>
+                {chipKea('semua', 'Semua', 0)}
+                {chipKea('B', KEAMANAN.B.nama, hitungKea.B)}
+                {chipKea('T', KEAMANAN.T.nama, hitungKea.T)}
+                {chipKea('R', 'Rahasia', hitungKea.R)}
+              </div>
+              <div className="chips" role="group" aria-label="Saring menurut nasib akhir arsip">
+                <span className="lbl">Nasib akhir</span>
+                {chipNasib('semua', 'Semua', 0)}
+                {chipNasib('permanen', LABEL_NASIB.permanen, hitungNasib.permanen)}
+                {chipNasib('musnah', LABEL_NASIB.musnah, hitungNasib.musnah)}
+                {chipNasib('kecuali', LABEL_NASIB.kecuali, hitungNasib.kecuali)}
+              </div>
+            </>
+          )}
+
           {hasil.corrected && (
             <p className="koreksi">
               Tidak ada hasil untuk “{q.trim()}”. Menampilkan hasil untuk “{hasil.corrected}”.{' '}
@@ -168,9 +245,9 @@ export default function Search() {
             </div>
           ) : tampil.length === 0 ? (
             <div className="kosong">
-              <b>Tidak ada {saring === 'jenis' ? 'jenis arsip' : 'kelompok'} pada hasil ini</b>
+              <b>Tidak ada hasil dengan penyaring ini</b>
               <div className="kosong-act">
-                <button type="button" className="btn ghost" onClick={() => setSaring('semua')}>
+                <button type="button" className="btn ghost" onClick={resetFilter}>
                   Tampilkan semua hasil
                 </button>
               </div>

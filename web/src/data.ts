@@ -3,8 +3,67 @@
 /** k kode · n nama · u uraian "antara lain" · h halaman PDF · p nomor asli di PDF · c catatan koreksi */
 export type Item = { k: string; n: string; u: string; h: number; p?: string; c?: string }
 
+/**
+ * Keamanan/akses (Lampiran II) dan retensi (Lampiran III) per kode.
+ * s keamanan (B Biasa · T Terbatas · R Rahasia · S Sangat Rahasia · X tergantung jenis arsip yang lebih spesifik)
+ * a akses (b Terbuka · t Tertutup · x tergantung) · hs halaman PDF Lampiran II
+ * ra retensi aktif · ri retensi inaktif · rk keterangan (nasib akhir) · hr halaman PDF Lampiran III
+ * w kode induk bila retensi diwarisi dari kelompoknya
+ * q 1 bila nilai retensi di PDF tidak terbaca dengan pasti (hanya rujukan halaman hr yang disimpan)
+ */
+export type Aturan = {
+  s?: 'B' | 'T' | 'R' | 'S' | 'X'
+  a?: 'b' | 't' | 'x'
+  hs?: number
+  ra?: string
+  ri?: string
+  rk?: string
+  hr?: number
+  w?: string
+  q?: 1
+}
+
+export const KEAMANAN: Record<NonNullable<Aturan['s']>, { nama: string; hak: string; dasar: string }> = {
+  B: {
+    nama: 'Biasa',
+    hak: 'Pengguna internal dan eksternal',
+    dasar: 'Apabila diketahui oleh publik tidak merugikan siapapun.',
+  },
+  T: {
+    nama: 'Terbatas',
+    hak: 'Penentu kebijakan, pengawas internal dan eksternal serta penegak hukum',
+    dasar: 'Apabila diketahui oleh pihak yang tidak berhak dapat mengakibatkan terganggunya pelaksanaan tugas dan fungsi lembaga pemerintahan.',
+  },
+  R: {
+    nama: 'Rahasia',
+    hak: 'Penentu kebijakan, pengawas internal dan eksternal serta penegak hukum',
+    dasar: 'Apabila diketahui oleh pihak yang tidak berhak dapat mengakibatkan terganggunya fungsi penyelenggaraan negara, sumber daya nasional, dan/atau ketertiban umum.',
+  },
+  S: {
+    nama: 'Sangat Rahasia',
+    hak: 'Penentu kebijakan, pengawas internal dan eksternal serta penegak hukum',
+    dasar: 'Apabila diketahui oleh pihak yang tidak berhak dapat membahayakan kedaulatan negara.',
+  },
+  X: { nama: 'Tergantung jenis arsip', hak: '', dasar: 'Mengikuti klasifikasi jenis arsip yang lebih spesifik.' },
+}
+
+export const AKSES: Record<NonNullable<Aturan['a']>, string> = { b: 'Terbuka', t: 'Tertutup', x: 'Tergantung jenis arsip' }
+
+export type Nasib = 'permanen' | 'musnah' | 'kecuali' | 'lain'
+
+/** Nasib akhir arsip dari kolom Keterangan Lampiran III. */
+export function nasibOf(rk: string | undefined): Nasib | null {
+  if (!rk) return null
+  const t = rk.toLowerCase()
+  if (t.startsWith('permanen')) return 'permanen'
+  if (t.startsWith('musnah')) return /kecuali|permanen/.test(t) ? 'kecuali' : 'musnah'
+  return 'lain'
+}
+
 export type Data = {
   items: Item[]
+  /** keamanan & retensi per kode; kode tanpa baris di Lampiran II/III tidak ada di sini */
+  aturan: Map<string, Aturan>
   byCode: Map<string, Item>
   children: Map<string, Item[]>
   roots: Item[]
@@ -44,7 +103,7 @@ export function words(s: string): string[] {
   return s.toLowerCase().match(/[a-z0-9]{4,}/g) ?? []
 }
 
-export function buildData(items: Item[]): Data {
+export function buildData(items: Item[], aturanJson: Record<string, Aturan> = {}): Data {
   const byCode = new Map<string, Item>()
   const children = new Map<string, Item[]>()
   const roots: Item[] = []
@@ -65,7 +124,7 @@ export function buildData(items: Item[]): Data {
     for (const w of words(it.n)) vocab.set(w, (vocab.get(w) ?? 0) + 1)
   }
   const hay = items.map((i) => `${i.k} ${i.n} ${i.u}`.toLowerCase())
-  return { items, byCode, children, roots, hay, vocab, countByBidang }
+  return { items, aturan: new Map(Object.entries(aturanJson)), byCode, children, roots, hay, vocab, countByBidang }
 }
 
 /** Dari bidang sampai kode itu sendiri. */

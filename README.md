@@ -4,7 +4,7 @@
 
 <p align="center">
   <b>Cari kode klasifikasi arsip dalam hitungan detik.</b><br>
-  Seluruh kode dan nama klasifikasi arsip Pemerintah Daerah dari Pergub Bali Nomor 64 Tahun 2023, dalam satu web yang ringan.
+  Seluruh kode klasifikasi arsip Pemerintah Daerah dari Pergub Bali Nomor 64 Tahun 2023, lengkap dengan keamanan, akses, dan retensinya, dalam satu web yang ringan.
 </p>
 
 <p align="center">
@@ -12,44 +12,46 @@
   <img alt="Vite" src="https://img.shields.io/badge/Vite-8-5468E7?logo=vite&logoColor=white">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-5468E7?logo=typescript&logoColor=white">
   <img alt="Data" src="https://img.shields.io/badge/data-2.989%20kode-2B37A8">
-  <img alt="Uji" src="https://img.shields.io/badge/uji-17%20lulus-13804B">
+  <img alt="Uji" src="https://img.shields.io/badge/uji-24%20lulus-13804B">
   <img alt="Tanpa server" src="https://img.shields.io/badge/backend-tidak%20ada-FFC861">
   <img alt="PWA" src="https://img.shields.io/badge/PWA-offline-5468E7">
 </p>
 
 <p align="center">
-  <a href="#-fitur">Fitur</a> ·
-  <a href="#-mulai-cepat">Mulai cepat</a> ·
-  <a href="#-data">Data</a> ·
-  <a href="#-struktur-proyek">Struktur</a>
+  <a href="#fitur">Fitur</a> ·
+  <a href="#mulai-cepat">Mulai cepat</a> ·
+  <a href="#data">Data</a> ·
+  <a href="#struktur-proyek">Struktur</a>
 </p>
 
 ---
 
-## ✨ Sekilas
+## Sekilas
 
-Pergub Bali No. 64/2023 memuat daftar kode klasifikasi arsip di PDF setebal **893 halaman**. Mencari satu kode di dalamnya harus menggulir dan membaca manual. **Buku Saku Digital** menyajikan Lampiran I sebagai web yang bisa dicari: ketik kata atau awalan kode, lalu langsung dapat kode, nama, jalur induk, dan halaman sumbernya.
+Pergub Bali No. 64/2023 memuat daftar kode klasifikasi arsip di PDF setebal **893 halaman**. Mencari satu kode di dalamnya harus menggulir dan membaca manual. **Buku Saku Digital** menyajikan Lampiran I (klasifikasi), II (keamanan dan akses), dan III (jadwal retensi) sebagai web yang bisa dicari: ketik kata atau awalan kode, lalu langsung dapat kode, nama, jalur induk, dan halaman sumbernya.
 
 | | |
 |---|---|
-| 📚 **2.989** kode klasifikasi | 🗂️ **10** bidang · **56** sub-bidang |
-| 📄 Setiap kode menyertakan **halaman PDF** sumbernya | 🔒 Tanpa server, tanpa login, tanpa pelacakan |
+| **2.989** kode klasifikasi | **10** bidang · **56** sub-bidang |
+| Setiap kode menyertakan **halaman PDF** sumbernya | Tanpa server, tanpa login, tanpa pelacakan |
 
-## 🧭 Fitur
+## Fitur
 
 | Fitur | Keterangan |
 |---|---|
-| 🔍 **Cari** | Ketik awalan kode (`000.1.2`) atau kata (`perjalanan dinas`). Kata hanya dicocokkan di awal kata, jadi `anggaran` tidak menarik `pelanggaran` |
-| ✏️ **Toleran salah ketik** | `perjalnan dinas` otomatis diperbaiki, dan pengguna diberi tahu |
-| 🌳 **Telusur** | Kolom bertingkat dari bidang sampai tingkat 4, dengan kartu detail kode terpilih |
-| 📋 **Salin kode** | Satu klik, siap ditempel di nomor surat |
-| 📖 **Buka PDF** | Langsung ke halaman sumber di Pergub. Di HP dan aplikasi terpasang, PDF dibuka di penampil dalam aplikasi dengan tombol **Kembali** dan navigasi halaman; di desktop memakai penampil browser |
-| 🕘 **Terakhir dilihat** | Disimpan di perangkat sendiri, tanpa akun |
-| 📱 **Responsif** | Sidebar di desktop; bilah atas dan menu bawah di HP |
-| 📲 **Bisa dipasang & offline (PWA)** | Pasang ke layar utama HP atau laptop. Cari dan telusur tetap jalan tanpa internet; hanya PDF yang perlu online |
-| ⌨️ **Pintasan** | Tekan `/` atau `Ctrl+K` dari halaman mana pun untuk mencari |
+| **Cari** | Ketik awalan kode (`000.1.2`) atau kata (`perjalanan dinas`). Kata hanya dicocokkan di awal kata, jadi `anggaran` tidak menarik `pelanggaran` |
+| **Toleran salah ketik** | `perjalnan dinas` otomatis diperbaiki, dan pengguna diberi tahu |
+| **Telusur** | Kolom bertingkat dari bidang sampai tingkat 4, dengan kartu detail kode terpilih |
+| **Keamanan dan akses** | Kartu detail memuat klasifikasi keamanan (Biasa, Terbatas, Rahasia, Sangat Rahasia), akses terbuka atau tertutup, hak akses, dan dasar pertimbangan dari Lampiran II |
+| ⏳ **Retensi** | Masa simpan aktif dan inaktif, total tahun, dan nasib akhir (Permanen atau Musnah) dari Lampiran III. Pencarian bisa disaring menurut keamanan dan nasib akhir |
+| **Salin kode** | Satu klik, siap ditempel di nomor surat |
+| **Buka PDF** | Langsung ke halaman sumber di Pergub. Di semua perangkat, PDF dibuka di penampil dalam aplikasi dengan tombol **Kembali**, zoom (cubit, ketuk dua kali, atau tombol +/−), dan pindah halaman (geser atau tombol) |
+| **Terakhir dilihat** | Disimpan di perangkat sendiri, tanpa akun |
+| **Responsif** | Sidebar di desktop; bilah atas dan menu bawah di HP |
+| **Bisa dipasang & offline (PWA)** | Pasang ke layar utama HP atau laptop. Cari dan telusur tetap jalan tanpa internet; hanya PDF yang perlu online |
+| ⌨ **Pintasan** | Tekan `/` atau `Ctrl+K` dari halaman mana pun untuk mencari |
 
-## 🚀 Mulai cepat
+## Mulai cepat
 
 > Jalankan perintah dari folder **`web`**, bukan dari folder utama.
 
@@ -68,7 +70,7 @@ npm run dev        # buka http://localhost:5173
 
 **Menayangkan:** unggah folder `web/dist` ke hosting statis mana pun (Netlify, Vercel, GitHub Pages). Aplikasi memakai alamat berawalan `#/`, jadi tidak perlu pengaturan khusus di server.
 
-### 🖼️ Gambar pratinjau tautan
+### Gambar pratinjau tautan
 
 Saat tautan dikirim lewat WhatsApp, LinkedIn, atau X, yang tampil adalah gambar [`web/public/og-image.jpg`](web/public/og-image.jpg) (1200 × 630, 77 KB). Aplikasi pesan hanya bisa membaca gambar ini dari **alamat lengkap**, jadi alamat situs ditulis di `ALAMAT_SITUS` pada [`web/vite.config.ts`](web/vite.config.ts) (saat ini `https://buku-saku.rajistha.my.id`).
 
@@ -76,7 +78,7 @@ Bila pindah domain, ubah `ALAMAT_SITUS`, atau build dengan `SITE_URL=https://dom
 
 Setelah tayang, periksa pratinjaunya di [opengraph.xyz](https://www.opengraph.xyz) atau [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/). WhatsApp menyimpan pratinjau lama cukup lama, jadi untuk mencobanya kirim tautan dengan tambahan `?v=2` di belakangnya.
 
-## 🔎 Cara kerja pencarian
+## Cara kerja pencarian
 
 | Yang diketik | Hasilnya |
 |---|---|
@@ -87,24 +89,34 @@ Setelah tayang, periksa pratinjaunya di [opengraph.xyz](https://www.opengraph.xy
 
 Hasil dibedakan menjadi **jenis arsip** (kode tanpa turunan) dan **kelompok** (kode yang punya turunan).
 
-## 📊 Data
+## Data
 
-Sumber: **Peraturan Gubernur Bali Nomor 64 Tahun 2023**, Lampiran I (Klasifikasi Arsip Pemerintah Daerah), halaman 11–149 PDF.
+Sumber: **Peraturan Gubernur Bali Nomor 64 Tahun 2023**:
+
+| Lampiran | Isi | Halaman PDF |
+|---|---|---|
+| I | Klasifikasi Arsip Pemerintah Daerah | 11–149 |
+| II | Klasifikasi Keamanan dan Akses Arsip Dinamis | 150–639 |
+| III | Jadwal Retensi Arsip | 640–893 |
 
 ```mermaid
 flowchart LR
-    A[PDF Pergub<br/>hlm 11–149] --> B[Ekstraksi Python<br/>pdfplumber]
-    B --> C[Pemeriksaan &<br/>10 koreksi]
-    C --> D[klasifikasi.json]
+    A[PDF Pergub<br/>Lampiran I–III] --> B[Ekstraksi Python<br/>pdfplumber]
+    B --> C[Pemeriksaan, koreksi,<br/>pencocokan ke kode]
+    C --> D[klasifikasi.json<br/>aturan.json]
     D --> E[Web app<br/>pencarian di browser]
 ```
 
 **Cara data diperiksa**
-- ✅ Tidak ada kode ganda, dan setiap kode (selain bidang) memiliki induk
-- ✅ Jumlah per bidang dicocokkan otomatis lewat uji
-- ✅ Kode dibandingkan dengan Lampiran II, yang memuat kode yang sama
-- ⚠️ **10 baris dikoreksi atau ditambahkan** karena salah ketik nomor kode di PDF. Nomor aslinya tetap disimpan, dan daftarnya tampil di halaman *Tentang Data*
-- ⚠️ 20 jenis arsip yang tidak terbaca di Lampiran II belum dicocokkan satu per satu
+- Tidak ada kode ganda, dan setiap kode (selain bidang) memiliki induk
+- Jumlah per bidang dicocokkan otomatis lewat uji
+- Kode dibandingkan dengan Lampiran II, yang memuat kode yang sama
+- Perhatian: **10 baris dikoreksi atau ditambahkan** karena salah ketik nomor kode di PDF. Nomor aslinya tetap disimpan, dan daftarnya tampil di halaman *Tentang Data*
+- Perhatian: 20 jenis arsip yang tidak terbaca di Lampiran II belum dicocokkan satu per satu
+- **Keamanan dan akses** (Lampiran II): 2.421 dari 2.441 jenis arsip punya data. Sisanya memang tidak punya baris di Lampiran II karena penomorannya berbeda
+- **Retensi** (Lampiran III): Lampiran III tidak memakai kode klasifikasi, jadi nomornya (I, A, 1, a, …) dihitung ulang menjadi kode lalu dicek dengan kemiripan nama. Bidang ditentukan dari nama karena angka Romawi di PDF tidak berurutan. Hasilnya diperiksa pada sampel halaman terhadap tampilan asli PDF
+- Perhatian: Sekitar 70 jenis arsip punya nilai retensi yang bersyarat, bergabung, atau terpotong di PDF. Untuk itu aplikasi hanya menampilkan rujukan halaman, bukan angka
+- Perhatian: **Data keamanan dan retensi belum ditinjau arsiparis.** Diambil otomatis dari PDF; cocokkan dengan halaman PDF yang ditautkan sebelum dipakai untuk keputusan penyusutan atau pembukaan arsip
 
 | Bidang | Kode | Bidang | Kode |
 |---|---:|---|---:|
@@ -114,9 +126,9 @@ flowchart LR
 | 300 Keamanan dan Ketertiban | 41 | 800 Kepegawaian | 120 |
 | 400 Kesejahteraan Rakyat | 736 | 900 Keuangan | 85 |
 
-Data siap pakai ada di [`web/public/data/klasifikasi.json`](web/public/data/klasifikasi.json) (237 KB). Setiap baris berisi kode, nama, uraian, dan halaman PDF; baris yang dikoreksi juga menyimpan nomor aslinya.
+Data siap pakai ada di [`web/public/data/klasifikasi.json`](web/public/data/klasifikasi.json) (237 KB): kode, nama, uraian, dan halaman PDF, dan baris yang dikoreksi menyimpan nomor aslinya. Keamanan dan retensi per kode ada di [`web/public/data/aturan.json`](web/public/data/aturan.json) (235 KB).
 
-## 🗂️ Struktur proyek
+## Struktur proyek
 
 ```
 Buku Saku/
@@ -134,7 +146,7 @@ Buku Saku/
 └── docs/logo/                    Logo, ikon, dan sumber gambar pratinjau
 ```
 
-## 🛠️ Teknologi
+## Teknologi
 
 | Lapisan | Pilihan |
 |---|---|

@@ -65,7 +65,7 @@ export default function Layout() {
         <InstallButton className="side-pasang" />
         <div className="side-note">
           <b>Sumber</b>
-          Pergub Bali No. 64 Tahun 2023, Lampiran I (hlm 11–149).
+          Pergub Bali No. 64 Tahun 2023, Lampiran I–III (hlm 11–893).
           <br />
           <PdfLink halaman={11}>Buka PDF</PdfLink>
         </div>

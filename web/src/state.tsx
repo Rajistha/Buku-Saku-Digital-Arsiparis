@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { buildData, type Data, type Item } from './data.ts'
+import { buildData, type Aturan, type Data, type Item } from './data.ts'
 
 const DataCtx = createContext<Data | null>(null)
 
@@ -9,13 +9,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let batal = false
-    fetch('data/klasifikasi.json')
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        return r.json() as Promise<Item[]>
+    const ambil = <T,>(url: string) =>
+      fetch(url).then((r) => {
+        if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`)
+        return r.json() as Promise<T>
       })
-      .then((items) => {
-        if (!batal) setData(buildData(items))
+    Promise.all([ambil<Item[]>('data/klasifikasi.json'), ambil<Record<string, Aturan>>('data/aturan.json')])
+      .then(([items, aturan]) => {
+        if (!batal) setData(buildData(items, aturan))
       })
       .catch((e: unknown) => {
         if (!batal) setErr(String(e))

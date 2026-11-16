@@ -29,7 +29,7 @@ export default function Home() {
     <>
       <section className="hero">
         <h1>Cari kode klasifikasi arsip</h1>
-        <p>{fmt(d.items.length)} kode dan nama klasifikasi dari Pergub Bali Nomor 64 Tahun 2023.</p>
+        <p>{fmt(d.items.length)} kode klasifikasi dari Pergub Bali Nomor 64 Tahun 2023, lengkap dengan keamanan, akses, dan retensinya.</p>
         <form className="bigsearch" onSubmit={onSubmit} role="search">
           <Icon name="search" />
           <input

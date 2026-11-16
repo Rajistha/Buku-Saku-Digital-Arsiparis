@@ -3,11 +3,134 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BidangIcon, Icon } from '../components/Icon.tsx'
 import { CopyButton, pushRecent, useTitle } from '../components/ui.tsx'
 import { PdfLink } from '../components/PdfLink.tsx'
-import { ancestors, hasChildren, parentOf, type Data, type Item } from '../data.ts'
+import { AKSES, ancestors, hasChildren, KEAMANAN, nasibOf, parentOf, type Data, type Item } from '../data.ts'
 import { useData } from '../state.tsx'
 
 const JUDUL = ['Tingkat 1 · Bidang', 'Tingkat 2 · Sub-bidang', 'Tingkat 3', 'Tingkat 4']
 type Kolom = { judul: string; items: Item[]; aktif?: string }
+
+const PDF_OFFLINE = (
+  <>
+    <Icon name="wifiOff" />
+    PDF perlu internet
+  </>
+)
+
+/** "2 Tahun" + "3 Tahun" → "5 tahun"; null bila salah satunya bukan angka tahun polos. */
+function totalTahun(ra?: string, ri?: string): string | null {
+  const a = /^(\d+) Tahun$/.exec(ra ?? '')
+  const i = /^(\d+) Tahun$/.exec(ri ?? '')
+  return a && i ? `${Number(a[1]) + Number(i[1])} tahun` : null
+}
+
+function Keamanan({ it, d }: { it: Item; d: Data }) {
+  const at = d.aturan.get(it.k)
+  const kea = at?.s ? KEAMANAN[at.s] : null
+  const kelompok = hasChildren(d, it.k)
+  return (
+    <div className="ur">
+      <b>Keamanan dan akses</b>
+      {kea && at ? (
+        <>
+          <dl className="kv2">
+            <dt>Keamanan</dt>
+            <dd>
+              <span className={`tag s-${at.s}`}>{kea.nama}</span>
+            </dd>
+            {at.a && (
+              <>
+                <dt>Akses</dt>
+                <dd>{AKSES[at.a]}</dd>
+              </>
+            )}
+            {kea.hak && (
+              <>
+                <dt>Hak akses</dt>
+                <dd>{kea.hak}</dd>
+              </>
+            )}
+            <dt>Dasar</dt>
+            <dd>{kea.dasar}</dd>
+          </dl>
+          {at.hs && (
+            <PdfLink halaman={at.hs} kode={it.k} className="link-pdf" offline={PDF_OFFLINE}>
+              Lampiran II · hlm {at.hs} PDF
+            </PdfLink>
+          )}
+        </>
+      ) : (
+        <span className="muted">
+          {kelompok ? 'Kelompok ini tidak punya klasifikasi sendiri. Lihat jenis arsip di bawahnya.' : 'Tidak tercantum pada Lampiran II untuk kode ini.'}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function Retensi({ it, d }: { it: Item; d: Data }) {
+  const at = d.aturan.get(it.k)
+  const kelompok = hasChildren(d, it.k)
+  const ada = !!at && !!(at.ra || at.ri || at.rk)
+  const nasib = nasibOf(at?.rk)
+  const total = totalTahun(at?.ra, at?.ri)
+  return (
+    <div className="ur">
+      <b>Retensi arsip</b>
+      {at && ada ? (
+        <>
+          <dl className="kv2">
+            {at.ra && (
+              <>
+                <dt>Aktif</dt>
+                <dd>{at.ra}</dd>
+              </>
+            )}
+            {at.ri && (
+              <>
+                <dt>Inaktif</dt>
+                <dd>{at.ri}</dd>
+              </>
+            )}
+            {total && (
+              <>
+                <dt>Total</dt>
+                <dd>{total}</dd>
+              </>
+            )}
+            {at.rk && (
+              <>
+                <dt>Nasib akhir</dt>
+                <dd>
+                  <span className={`tag n-${nasib}`}>{at.rk}</span>
+                </dd>
+              </>
+            )}
+          </dl>
+          {at.w && (
+            <p className="catatan">
+              Jadwal ini tertulis untuk kelompok{' '}
+              <Link to={`/telusur/${at.w}`} className="link">
+                {at.w}
+              </Link>{' '}
+              dan berlaku juga untuk kode ini.
+            </p>
+          )}
+        </>
+      ) : at?.q ? (
+        <p className="catatan">Nilai retensi tidak terbaca dengan pasti dari PDF. Periksa langsung pada halaman Lampiran III.</p>
+      ) : (
+        <span className="muted">
+          {kelompok ? 'Kelompok ini tidak punya jadwal retensi sendiri. Lihat jenis arsip di bawahnya.' : 'Tidak tercantum pada Lampiran III untuk kode ini.'}
+        </span>
+      )}
+      {at?.hr && (
+        <PdfLink halaman={at.hr} kode={it.k} className="link-pdf" offline={PDF_OFFLINE}>
+          Lampiran III · hlm {at.hr} PDF
+        </PdfLink>
+      )}
+    </div>
+  )
+}
 
 function Detail({ it, d }: { it: Item; d: Data }) {
   const jalur = ancestors(d, it.k).slice(0, -1)
@@ -47,12 +170,7 @@ function Detail({ it, d }: { it: Item; d: Data }) {
             halaman={it.h}
             kode={it.k}
             className="btn ghost"
-            offline={
-              <>
-                <Icon name="wifiOff" />
-                PDF perlu internet
-              </>
-            }
+            offline={PDF_OFFLINE}
           >
             <Icon name="file" />
             Buka PDF hlm {it.h}
@@ -64,6 +182,8 @@ function Detail({ it, d }: { it: Item; d: Data }) {
           <b>Uraian “antara lain”</b>
           {it.u ? it.u.replace(/^antara lain:?\s*/i, '') : <span className="muted">Tidak ada uraian tambahan pada Pergub untuk kode ini.</span>}
         </div>
+        <Keamanan it={it} d={d} />
+        <Retensi it={it} d={d} />
         {it.c && (
           <div className="ur warn">
             <b>Dikoreksi dari PDF</b>

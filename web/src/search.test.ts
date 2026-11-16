@@ -1,11 +1,12 @@
 // Uji sederhana pencarian terhadap data asli. Jalankan: npm test
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { ancestors, buildData, hasChildren, levelOf, parentOf, type Item } from './data.ts'
+import { ancestors, buildData, hasChildren, KEAMANAN, levelOf, nasibOf, parentOf, type Aturan, type Item } from './data.ts'
 import { search } from './search.ts'
 
 const items = JSON.parse(readFileSync(new URL('../public/data/klasifikasi.json', import.meta.url), 'utf8')) as Item[]
-const d = buildData(items)
+const aturan = JSON.parse(readFileSync(new URL('../public/data/aturan.json', import.meta.url), 'utf8')) as Record<string, Aturan>
+const d = buildData(items, aturan)
 let n = 0
 const ok = (nama: string, fn: () => void) => {
   fn()
@@ -108,6 +109,55 @@ ok('baris yang dikoreksi menyimpan nomor asli', () => {
   const x = d.byCode.get('400.2.3.4')
   assert.equal(x?.p, '400.4.3.4')
   assert.equal(items.filter((i) => i.c).length, 10)
+})
+
+ok('setiap kode pada data keamanan/retensi ada di klasifikasi', () => {
+  for (const k of Object.keys(aturan)) assert.ok(d.byCode.has(k), `${k} tidak ada di Lampiran I`)
+})
+
+ok('cakupan keamanan dan retensi pada jenis arsip', () => {
+  const daun = items.filter((i) => !hasChildren(d, i.k))
+  const kea = daun.filter((i) => aturan[i.k]?.s).length
+  const ret = daun.filter((i) => aturan[i.k]?.rk || aturan[i.k]?.q).length
+  assert.ok(kea >= 2420, `keamanan ${kea}`)
+  assert.ok(ret >= 2400, `retensi ${ret}`)
+})
+
+ok('jumlah kategori keamanan sesuai Lampiran II', () => {
+  const hitung = (s: string) => Object.values(aturan).filter((a) => a.s === s).length
+  assert.equal(hitung('R'), 16)
+  assert.equal(hitung('S'), 4)
+  assert.equal(hitung('X'), 1)
+  assert.ok(hitung('B') > 2000 && hitung('T') > 350)
+  for (const a of Object.values(aturan)) if (a.s) assert.ok(a.s in KEAMANAN)
+})
+
+ok('contoh nilai: 000.1.1 Telekomunikasi', () => {
+  assert.deepEqual(aturan['000.1.1'], { s: 'B', a: 'b', hs: 150, ra: '1 Tahun', ri: '1 Tahun', rk: 'Musnah', hr: 640 })
+})
+
+ok('nilai retensi yang ditampilkan berpola jelas; sisanya hanya rujukan halaman', () => {
+  for (const [k, a] of Object.entries(aturan)) {
+    if (a.q) {
+      assert.ok(a.hr && !a.ra && !a.ri && !a.rk, `${k} bertanda ragu tetapi berisi nilai`)
+    } else if (a.rk !== undefined) {
+      assert.match(a.ra ?? '', /^\d+ Tahun/, `${k} aktif`)
+      assert.match(a.ri ?? '', /^\d+ Tahun$/, `${k} inaktif`)
+      assert.match(a.rk, /^(Permanen|Musnah)/, `${k} keterangan`)
+    }
+  }
+})
+
+ok('penomoran huruf berlanjut aa, ab, … terbaca (500.4.4.27 dan seterusnya)', () => {
+  assert.ok(aturan['500.4.4.27']?.rk, '500.4.4.27 punya keterangan')
+  assert.ok(aturan['500.4.4.49']?.rk, '500.4.4.49 punya keterangan')
+})
+
+ok('nasib akhir', () => {
+  assert.equal(nasibOf('Permanen'), 'permanen')
+  assert.equal(nasibOf('Musnah'), 'musnah')
+  assert.equal(nasibOf('Musnah, Kecuali Evaluasi Permanen'), 'kecuali')
+  assert.equal(nasibOf(undefined), null)
 })
 
 console.log(`\n${n} uji lulus`)

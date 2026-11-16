@@ -1,24 +1,6 @@
-import { useSyncExternalStore, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useOnline } from '../pwa.tsx'
-
-const PDF = 'pergub-64-2023.pdf'
-
-// Aplikasi terpasang (tanpa bilah browser, jadi tak ada tombol kembali) dan layar sentuh
-// (Chrome Android biasanya mengunduh PDF, bukan menampilkannya) memakai penampil di dalam aplikasi.
-// Desktop di tab browser memakai penampil bawaan browser yang lebih lengkap.
-const QUERY = '(display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen), (pointer: coarse)'
-
-function useDalamAplikasi(): boolean {
-  return useSyncExternalStore(
-    (kabari) => {
-      const m = window.matchMedia(QUERY)
-      m.addEventListener('change', kabari)
-      return () => m.removeEventListener('change', kabari)
-    },
-    () => window.matchMedia(QUERY).matches || (navigator as Navigator & { standalone?: boolean }).standalone === true,
-  )
-}
 
 type Props = {
   /** nomor halaman PDF yang dituju */
@@ -31,9 +13,11 @@ type Props = {
   offline?: ReactNode
 }
 
+// PDF selalu dibuka di penampil dalam aplikasi (zoom, geser, tombol Kembali), baik di HP, aplikasi terpasang,
+// maupun desktop. Di aplikasi terpasang tak ada bilah browser, dan Chrome Android biasanya mengunduh PDF
+// alih-alih menampilkannya, jadi satu penampil untuk semua perangkat paling konsisten.
 export function PdfLink({ halaman, kode, className = '', children, offline }: Props) {
   const online = useOnline()
-  const dalamAplikasi = useDalamAplikasi()
 
   if (!online)
     return (
@@ -41,15 +25,9 @@ export function PdfLink({ halaman, kode, className = '', children, offline }: Pr
         {offline ?? children}
       </span>
     )
-  if (dalamAplikasi)
-    return (
-      <Link to={`/pdf/${halaman ?? 1}${kode ? `?k=${encodeURIComponent(kode)}` : ''}`} className={className}>
-        {children}
-      </Link>
-    )
   return (
-    <a href={`${PDF}${halaman ? `#page=${halaman}` : ''}`} target="_blank" rel="noreferrer" className={className}>
+    <Link to={`/pdf/${halaman ?? 1}${kode ? `?k=${encodeURIComponent(kode)}` : ''}`} className={className}>
       {children}
-    </a>
+    </Link>
   )
 }
