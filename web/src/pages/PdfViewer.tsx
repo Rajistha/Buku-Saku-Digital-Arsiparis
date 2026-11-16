@@ -11,12 +11,12 @@ pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
 const PDF = 'pergub-64-2023.pdf'
 const ZOOM_MIN = 1
-// putaran halaman (0/90/180/270) diingat selama sesi, agar halaman landscape berikutnya tetap terputar
+// putaran halaman hanya dua posisi (0 = normal, 90 = diputar) dan diingat selama sesi, agar halaman landscape berikutnya tetap terputar
 const KUNCI_PUTAR = 'pdf-putar'
 function putaranAwal(): number {
   try {
     const n = Number(sessionStorage.getItem(KUNCI_PUTAR))
-    return [0, 90, 180, 270].includes(n) ? n : 0
+    return n === 90 ? 90 : 0
   } catch {
     return 0
   }
@@ -174,7 +174,7 @@ export default function PdfViewer() {
   }, [zoom])
 
   const putarHalaman = () => {
-    const baru = (putar + 90) % 360
+    const baru = putar === 0 ? 90 : 0
     setPutar(baru)
     try {
       sessionStorage.setItem(KUNCI_PUTAR, String(baru))
@@ -353,9 +353,16 @@ export default function PdfViewer() {
             onChange={(e) => setKetik(e.target.value.replace(/\D/g, ''))}
             onFocus={(e) => e.target.select()}
             inputMode="numeric"
+            enterKeyHint="go"
             aria-label="Nomor halaman"
           />
           <span>/ {total ? total.toLocaleString('id-ID') : '…'}</span>
+          {ketik !== String(halaman) && (
+            // papan ketik angka di HP (terutama iPhone) tidak punya tombol Enter, jadi ada tombol Pergi
+            <button type="submit" className="pergi">
+              Pergi
+            </button>
+          )}
           <button type="button" className="ikon" disabled={!total || halaman >= total} onClick={() => ke(halaman + 1)} aria-label="Halaman berikutnya">
             <Icon name="chev" />
           </button>
@@ -411,8 +418,8 @@ export default function PdfViewer() {
             type="button"
             className={'putar' + (sarankanPutar ? ' sorot' : '')}
             onClick={putarHalaman}
-            aria-label={`Putar halaman 90 derajat${putar ? ` (sekarang ${putar}°)` : ''}`}
-            title="Putar halaman"
+            aria-label={putar ? 'Kembalikan halaman ke posisi semula' : 'Putar halaman agar lebih besar'}
+            title={putar ? 'Posisi semula' : 'Putar halaman'}
           >
             <Icon name="rotate" />
           </button>
