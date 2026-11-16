@@ -300,7 +300,8 @@ export default function PdfViewer() {
                   {doc ? `Memuat halaman ${halaman}…` : 'Memuat PDF… pertama kali bisa ±7 MB'}
                 </div>
               )}
-              <div className="pdfv-zoom" style={{ width: `${zoom * 100}%` }}>
+              {!doc && <div className="pdfv-kerangka skel" />}
+              <div className="pdfv-zoom" style={{ width: `${zoom * 100}%`, display: doc ? undefined : 'none' }}>
                 <canvas ref={kanvas} className="pdfv-kanvas" aria-label={`Halaman ${halaman} Peraturan Gubernur Bali Nomor 64 Tahun 2023`} />
               </div>
             </>

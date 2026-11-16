@@ -321,3 +321,15 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
   .tbl { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- skeleton & loading ---------- */
+.skel { display: block; background: linear-gradient(90deg, #E7EAF9 25%, #F3F4FD 50%, #E7EAF9 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; border-radius: 8px; }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.sk-nav { gap: 6px; }
+.sk-nav-it { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.sk-head { display: grid; gap: 10px; }
+.sk-daftar { display: flex; flex-direction: column; gap: 10px; }
+.sk-baris { display: flex; align-items: center; gap: 18px; background: var(--surface); border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow); }
+.sk-teks { flex: 1; display: grid; gap: 8px; }
+.pdfv-kerangka { width: 100%; aspect-ratio: 1 / 1.414; border-radius: 4px; box-shadow: 0 6px 24px rgba(30, 34, 64, .12); }
+@media (max-width: 900px) { .sk-nav-it { padding: 10px 12px; } .sk-baris { padding: 14px; gap: 12px; } }

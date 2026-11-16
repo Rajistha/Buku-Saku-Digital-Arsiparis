@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Cari kode klasifikasi arsip beserta keamanan, akses, dan retensinya dari Pergub Bali Nomor 64 Tahun 2023." />
     <meta name="theme-color" content="#5468E7" />
+    <meta name="color-scheme" content="light" />
 
     <!-- pratinjau tautan (WhatsApp, LinkedIn, Facebook, X). __SITE_URL__ diisi saat build, lihat vite.config.ts -->
     <meta property="og:type" content="website" />
@@ -28,9 +29,70 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+    <!-- latar dan splash di-inline agar tampil sebelum CSS/JS selesai dimuat (tanpa layar hitam/putih kosong saat aplikasi dibuka) -->
+    <style>
+      html, body { margin: 0; height: 100%; background: #F5F6FD; color-scheme: light; }
+      #splash { position: fixed; inset: 0; z-index: 9999; display: grid; place-content: center; justify-items: center; gap: 22px; background: #F5F6FD; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; transition: opacity .45s ease; }
+      #splash.hilang { opacity: 0; pointer-events: none; }
+      #splash svg { width: 112px; height: 112px; overflow: visible; filter: drop-shadow(0 14px 28px rgba(84, 104, 231, .35)); animation: sp-masuk .7s cubic-bezier(.2, 1.3, .4, 1) both; }
+      #splash .g { transform-box: fill-box; transform-origin: center; }
+      #splash .buku { animation: sp-buku .6s .15s cubic-bezier(.2, 1, .4, 1) both; }
+      #splash .penanda { animation: sp-jatuh .5s .55s cubic-bezier(.3, 1.4, .5, 1) both; }
+      #splash .garis { stroke-dasharray: 14; animation: sp-gambar .45s .8s ease-out both; }
+      #splash .simpul { animation: sp-muncul .35s cubic-bezier(.3, 1.6, .5, 1) both; }
+      #splash .simpul.a { animation-delay: .75s; }
+      #splash .simpul.b { animation-delay: .95s; }
+      #splash .simpul.c { animation-delay: 1.05s; }
+      #splash .saku { animation: sp-naik .55s .35s cubic-bezier(.2, 1, .4, 1) both; }
+      #splash .judul { text-align: center; animation: sp-teks .6s 1s ease-out both; }
+      #splash .judul b { display: block; font-size: 19px; font-weight: 800; color: #1E2240; letter-spacing: -.2px; }
+      #splash .judul span { display: block; margin-top: 3px; font-size: 12.5px; font-weight: 500; color: #7C829C; }
+      #splash .bar { width: 120px; height: 4px; border-radius: 4px; background: #E4E7FA; overflow: hidden; animation: sp-teks .4s 1.1s ease-out both; }
+      #splash .bar i { display: block; height: 100%; width: 40%; border-radius: 4px; background: #5468E7; animation: sp-jalan 1.1s 1.1s ease-in-out infinite; }
+      @keyframes sp-masuk { from { opacity: 0; transform: scale(.55) translateY(10px); } to { opacity: 1; transform: none; } }
+      @keyframes sp-buku { from { opacity: 0; transform: translateY(14px) scale(.9); } to { opacity: 1; transform: none; } }
+      @keyframes sp-jatuh { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+      @keyframes sp-gambar { from { stroke-dashoffset: 14; } to { stroke-dashoffset: 0; } }
+      @keyframes sp-muncul { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: none; } }
+      @keyframes sp-naik { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+      @keyframes sp-teks { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      @keyframes sp-jalan { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+      @media (prefers-reduced-motion: reduce) { #splash *, #splash { animation: none !important; transition: none !important; } }
+    </style>
     <title>Buku Saku Digital Pemprov Bali</title>
   </head>
   <body>
+    <div id="splash" role="status" aria-label="Memuat Buku Saku Digital">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="sp-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#7283F5" />
+            <stop offset="1" stop-color="#3E4FD3" />
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="16" fill="url(#sp-bg)" />
+        <g class="g buku">
+          <path d="M17 14a4 4 0 0 1 4-4h22a4 4 0 0 1 4 4v30H17z" fill="#FFFFFF" />
+          <path d="M17 14a4 4 0 0 1 4-4h1.6v34H17z" fill="#D9DFFF" />
+        </g>
+        <path class="g penanda" d="M41 10h5v13.5l-2.5-2.3L41 23.5z" fill="#FFC861" />
+        <path class="garis" d="M34 20.5 28.6 30.6M34 20.5 38.8 30.6" stroke="#5468E7" stroke-width="1.8" stroke-linecap="round" fill="none" />
+        <g fill="#5468E7">
+          <circle class="g simpul a" cx="34" cy="19.6" r="2.6" />
+          <circle class="g simpul b" cx="28.6" cy="30.6" r="2.3" />
+          <circle class="g simpul c" cx="38.8" cy="30.6" r="2.3" />
+        </g>
+        <g class="g saku">
+          <path d="M12.5 38h39v9.2L32 56 12.5 47.2z" fill="#2B37A8" stroke="#2B37A8" stroke-width="2" stroke-linejoin="round" />
+          <path d="M17 42h30v3.6L32 51.6 17 45.6z" fill="none" stroke="#8FA0FF" stroke-width="1.3" stroke-linejoin="round" stroke-dasharray="2.6 2.2" />
+        </g>
+      </svg>
+      <div class="judul">
+        <b>Buku Saku Digital</b>
+        <span>Pemprov Bali</span>
+      </div>
+      <div class="bar"><i></i></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

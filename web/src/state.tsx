@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { AppSkeleton } from './components/Skeleton.tsx'
+import { tutupSplash } from './splash.ts'
 import { buildData, type Aturan, type Data, type Item } from './data.ts'
 
 const DataCtx = createContext<Data | null>(null)
@@ -26,6 +28,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // splash di index.html ditutup begitu data siap, atau bila gagal agar pesan galat terlihat
+  useEffect(() => {
+    if (data || err) tutupSplash()
+  }, [data, err])
+
   if (err)
     return (
       <div className="boot">
@@ -35,13 +42,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         </button>
       </div>
     )
-  if (!data)
-    return (
-      <div className="boot" role="status">
-        <div className="spin" />
-        Memuat data klasifikasi…
-      </div>
-    )
+  if (!data) return <AppSkeleton />
   return <DataCtx.Provider value={data}>{children}</DataCtx.Provider>
 }
 
