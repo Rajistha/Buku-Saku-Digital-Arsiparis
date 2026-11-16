@@ -67,6 +67,20 @@ npm run dev        # buka http://localhost:5173
 
 **Menayangkan:** unggah folder `web/dist` ke hosting statis mana pun (Netlify, Vercel, GitHub Pages). Aplikasi memakai alamat berawalan `#/`, jadi tidak perlu pengaturan khusus di server.
 
+### 🖼️ Gambar pratinjau tautan
+
+Saat tautan dikirim lewat WhatsApp, LinkedIn, atau X, yang tampil adalah gambar [`web/public/og-image.jpg`](web/public/og-image.jpg) (1200 × 630, 77 KB). Aplikasi pesan hanya bisa membaca gambar ini dari **alamat lengkap**, jadi alamat situs diisi otomatis saat build:
+
+| Hosting | Yang perlu dilakukan |
+|---|---|
+| Netlify | Tidak ada. Alamat situs terisi otomatis |
+| Vercel | Tidak ada. Alamat produksi terisi otomatis |
+| GitHub Pages / lainnya | Build dengan `SITE_URL`, mis. `SITE_URL=https://username.github.io/nama-repo npm run build` |
+
+Bila `SITE_URL` belum diisi, build tetap berhasil tetapi menampilkan peringatan, dan gambar pratinjau tidak akan muncul. Sumber gambarnya ada di [`docs/logo/src/og-image.html`](docs/logo/src/og-image.html).
+
+Setelah tayang, periksa pratinjaunya di [opengraph.xyz](https://www.opengraph.xyz) atau [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/). WhatsApp menyimpan pratinjau lama cukup lama, jadi untuk mencobanya kirim tautan dengan tambahan `?v=2` di belakangnya.
+
 ## 🔎 Cara kerja pencarian
 
 | Yang diketik | Hasilnya |
