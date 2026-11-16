@@ -61,12 +61,40 @@ const langganOnline = (f: () => void) => {
 export const useOnline = (): boolean => useSyncExternalStore(langganOnline, () => navigator.onLine)
 
 /* ---------- pemberitahuan service worker ---------- */
+const SATU_JAM = 60 * 60 * 1000
+
+/**
+ * Cek versi baru setiap jam selama aplikasi terbuka. Browser hanya mengecek saat aplikasi dibuka, jadi aplikasi yang
+ * dibiarkan terbuka tidak pernah tahu ada versi baru. Pengaktifannya tetap lewat bilah "Versi baru tersedia".
+ * Timer ditahan sistem saat aplikasi di latar belakang (terutama iOS), jadi cek juga dilakukan saat aplikasi
+ * kembali tampil bila sudah lewat satu jam sejak cek terakhir.
+ */
+function cekBerkala(swUrl: string, reg: ServiceWorkerRegistration | undefined): void {
+  if (!reg) return
+  let terakhir = Date.now()
+  const cek = async () => {
+    if (reg.installing || !navigator.onLine) return
+    terakhir = Date.now()
+    try {
+      // pastikan berkas service worker masih terjangkau sebelum meminta pembaruan
+      const r = await fetch(swUrl, { cache: 'no-store', headers: { 'cache-control': 'no-cache' } })
+      if (r.status === 200) await reg.update()
+    } catch {
+      // gagal (jaringan putus): coba lagi pada putaran berikutnya
+    }
+  }
+  setInterval(cek, SATU_JAM)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && Date.now() - terakhir >= SATU_JAM) void cek()
+  })
+}
+
 export function PwaStatus() {
   const {
     needRefresh: [perluMuatUlang, setPerluMuatUlang],
     offlineReady: [siapOffline, setSiapOffline],
     updateServiceWorker,
-  } = useRegisterSW()
+  } = useRegisterSW({ onRegisteredSW: cekBerkala })
   const online = useOnline()
 
   if (perluMuatUlang)

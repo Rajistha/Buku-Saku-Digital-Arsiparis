@@ -21,8 +21,8 @@ function putaranAwal(): number {
     return 0
   }
 }
-const ZOOM_MAX = 4
-const LANGKAH = [1, 1.5, 2, 3, 4]
+const ZOOM_MAX = 6
+const LANGKAH = [1, 1.5, 2, 3, 4, 6]
 const batas = (z: number) => Math.min(Math.max(z, ZOOM_MIN), ZOOM_MAX)
 
 // Dokumen disimpan selama aplikasi terbuka: membuka penampil lagi (atau pindah ke kode lain)
@@ -226,41 +226,13 @@ export default function PdfViewer() {
     setZoomDi(tujuan ?? (arah > 0 ? ZOOM_MAX : ZOOM_MIN))
   }
 
-  const jarakJari = () => {
-    const [a, b] = [...jari.current.values()]
-    return Math.hypot(a.x - b.x, a.y - b.y)
-  }
-  const tengahJari = () => {
-    const [a, b] = [...jari.current.values()]
-    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
-  }
   const onDown = (e: PE) => {
     if (e.pointerType === 'mouse') return
     jari.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     const g = gestur.current
-    if (jari.current.size === 2) {
-      const el = area.current
-      const w = bungkus.current
-      g.cubit = true
-      g.jarak = jarakJari()
-      g.zoom = zoomRef.current
-      g.k = 1
-      if (el && w && !g.hidup) {
-        const m = tengahJari()
-        const wr = w.getBoundingClientRect()
-        const ar = el.getBoundingClientRect()
-        g.mx = g.mx0 = m.x
-        g.my = g.my0 = m.y
-        g.ox = m.x - wr.left
-        g.oy = m.y - wr.top
-        g.wl = wr.left - ar.left + el.scrollLeft
-        g.wt = wr.top - ar.top + el.scrollTop
-        w.style.transformOrigin = `${g.ox}px ${g.oy}px`
-        w.style.willChange = 'transform'
-        el.style.overflow = 'hidden' // cegah gulir bawaan browser bersaing dengan transform selama mencubit
-        g.hidup = true
-      }
-    } else if (jari.current.size === 1) {
+    if (jari.current.size >= 2) {
+      g.cubit = true // dua jari: ditangani oleh handler sentuh di bawah; di sini hanya mencegah dianggap geser/ketuk
+    } else {
       g.cubit = false
       g.x = e.clientX
       g.y = e.clientY
@@ -268,17 +240,7 @@ export default function PdfViewer() {
     }
   }
   const onMove = (e: PE) => {
-    if (!jari.current.has(e.pointerId)) return
-    jari.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
-    const g = gestur.current
-    const w = bungkus.current
-    if (jari.current.size === 2 && g.hidup && g.jarak > 0 && w) {
-      const m = tengahJari()
-      g.k = batas(g.zoom * (jarakJari() / g.jarak)) / g.zoom
-      g.mx = m.x
-      g.my = m.y
-      w.style.transform = `translate(${m.x - g.mx0}px, ${m.y - g.my0}px) scale(${g.k})`
-    }
+    if (jari.current.has(e.pointerId)) jari.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
   }
   /** jari diangkat: ukuran sebenarnya diterapkan sekali, dari transform sementara */
   const akhiriCubit = () => {
@@ -292,7 +254,6 @@ export default function PdfViewer() {
     if (!jari.current.delete(e.pointerId)) return
     const g = gestur.current
     if (g.cubit) {
-      if (g.hidup) akhiriCubit()
       if (jari.current.size === 0) g.cubit = false
       return
     }
@@ -312,6 +273,76 @@ export default function PdfViewer() {
       } else g.tapT = sekarang
     }
   }
+
+  // Cubit memakai touch events, bukan pointer events: di iOS/Chrome browser bisa mengambil alih gestur dua jari
+  // (pointer dibatalkan, atau zoom halaman bawaan Safari ikut jalan) sehingga cubit terputus di tengah.
+  // Handler ini non-passive agar bisa memblokir gestur bawaan. Hanya memakai ref, jadi aman dipasang sekali.
+  useEffect(() => {
+    const el = area.current
+    if (!el) return
+    const ukur = (t: TouchList) => ({
+      x: (t[0].clientX + t[1].clientX) / 2,
+      y: (t[0].clientY + t[1].clientY) / 2,
+      d: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY),
+    })
+    const mulai = (e: TouchEvent) => {
+      const w = bungkus.current
+      if (e.touches.length !== 2 || !w) return
+      e.preventDefault()
+      const g = gestur.current
+      const m = ukur(e.touches)
+      if (g.hidup) return
+      const wr = w.getBoundingClientRect()
+      const ar = el.getBoundingClientRect()
+      g.cubit = true
+      g.jarak = Math.max(m.d, 1)
+      g.zoom = zoomRef.current
+      g.k = 1
+      g.mx = g.mx0 = m.x
+      g.my = g.my0 = m.y
+      g.ox = m.x - wr.left
+      g.oy = m.y - wr.top
+      g.wl = wr.left - ar.left + el.scrollLeft
+      g.wt = wr.top - ar.top + el.scrollTop
+      w.style.transformOrigin = `${g.ox}px ${g.oy}px`
+      w.style.willChange = 'transform'
+      el.style.overflow = 'hidden' // hentikan gulir bawaan selama mencubit
+      g.hidup = true
+    }
+    const gerak = (e: TouchEvent) => {
+      const g = gestur.current
+      const w = bungkus.current
+      if (!g.hidup || !w || e.touches.length < 2) return
+      e.preventDefault()
+      const m = ukur(e.touches)
+      g.k = batas(g.zoom * (m.d / g.jarak)) / g.zoom
+      g.mx = m.x
+      g.my = m.y
+      w.style.transform = `translate(${m.x - g.mx0}px, ${m.y - g.my0}px) scale(${g.k})`
+    }
+    const selesai = (e: TouchEvent) => {
+      if (gestur.current.hidup && e.touches.length < 2) akhiriCubit()
+    }
+    // Safari iOS: cegah zoom halaman bawaan yang tidak bisa dimatikan lewat meta viewport
+    const blok = (e: Event) => e.preventDefault()
+    el.addEventListener('touchstart', mulai, { passive: false })
+    el.addEventListener('touchmove', gerak, { passive: false })
+    el.addEventListener('touchend', selesai)
+    el.addEventListener('touchcancel', selesai)
+    el.addEventListener('gesturestart', blok)
+    el.addEventListener('gesturechange', blok)
+    el.addEventListener('gestureend', blok)
+    return () => {
+      el.removeEventListener('touchstart', mulai)
+      el.removeEventListener('touchmove', gerak)
+      el.removeEventListener('touchend', selesai)
+      el.removeEventListener('touchcancel', selesai)
+      el.removeEventListener('gesturestart', blok)
+      el.removeEventListener('gesturechange', blok)
+      el.removeEventListener('gestureend', blok)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
