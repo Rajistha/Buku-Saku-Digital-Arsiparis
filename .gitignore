@@ -1,3 +1,11 @@
+# yang dipublikasikan hanya aplikasi (web/), README, dan logo untuk README.
+# berkas di bawah ini tetap ada di komputer, hanya tidak ikut ter-push.
+/data/
+/scripts/
+/docs/*
+!/docs/logo/
+/PERGUB*.pdf
+
 # dependensi & hasil build
 node_modules/
 dist/

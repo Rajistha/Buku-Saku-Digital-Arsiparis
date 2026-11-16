@@ -20,8 +20,7 @@
   <a href="#-fitur">Fitur</a> ·
   <a href="#-mulai-cepat">Mulai cepat</a> ·
   <a href="#-data">Data</a> ·
-  <a href="#-struktur-proyek">Struktur</a> ·
-  <a href="#-dokumen">Dokumen</a>
+  <a href="#-struktur-proyek">Struktur</a>
 </p>
 
 ---
@@ -98,9 +97,9 @@ Sumber: **Peraturan Gubernur Bali Nomor 64 Tahun 2023**, Lampiran I (Klasifikasi
 
 ```mermaid
 flowchart LR
-    A[PDF Pergub<br/>hlm 11–149] --> B[extract_klasifikasi.py<br/>pdfplumber]
-    B --> C[klasifikasi.csv]
-    B --> D[klasifikasi.json]
+    A[PDF Pergub<br/>hlm 11–149] --> B[Ekstraksi Python<br/>pdfplumber]
+    B --> C[Pemeriksaan &<br/>10 koreksi]
+    C --> D[klasifikasi.json]
     D --> E[Web app<br/>pencarian di browser]
 ```
 
@@ -119,17 +118,7 @@ flowchart LR
 | 300 Keamanan dan Ketertiban | 41 | 800 Kepegawaian | 120 |
 | 400 Kesejahteraan Rakyat | 736 | 900 Keuangan | 85 |
 
-### Memperbarui data
-
-Bila Pergub direvisi atau daftar koreksi berubah:
-
-```bash
-pip install pdfplumber
-python scripts/extract_klasifikasi.py     # menulis data/ dan web/public/data/
-cd web && npm test && npm run build
-```
-
-Koreksi nomor kode ada di `KOREKSI`, `KOREKSI_NAMA`, dan `TAMBAHAN` di dalam skrip. Rinciannya di [`docs/ERD.md`](docs/ERD.md#6-koreksi-data).
+Data siap pakai ada di [`web/public/data/klasifikasi.json`](web/public/data/klasifikasi.json) (237 KB). Setiap baris berisi kode, nama, uraian, dan halaman PDF; baris yang dikoreksi juga menyimpan nomor aslinya.
 
 ## 🗂️ Struktur proyek
 
@@ -144,10 +133,9 @@ Buku Saku/
 │   │   └── search.test.ts        Uji data dan pencarian
 │   └── public/
 │       ├── data/klasifikasi.json Data yang dimuat aplikasi
-│       └── pergub-64-2023.pdf    Untuk tautan "Buka PDF hlm N"
-├── scripts/extract_klasifikasi.py
-├── data/                         Hasil ekstraksi (CSV, JSON, laporan)
-└── docs/                         PRD, ERD, DESIGN, mockup, logo
+│       ├── pergub-64-2023.pdf    Untuk tautan "Buka PDF hlm N"
+│       └── og-image.jpg          Gambar pratinjau tautan
+└── docs/logo/                    Logo, ikon, dan sumber gambar pratinjau
 ```
 
 ## 🛠️ Teknologi
@@ -161,16 +149,6 @@ Buku Saku/
 | Navigasi | React Router (hash) |
 | Ekstraksi data | Python + pdfplumber |
 | Font | Plus Jakarta Sans, JetBrains Mono |
-
-## 📁 Dokumen
-
-| Dokumen | Isi |
-|---|---|
-| [PRD](docs/PRD.md) | Tujuan, pengguna, fitur, dan kriteria penerimaan |
-| [ERD](docs/ERD.md) | Model data, kamus data, dan daftar koreksi |
-| [DESIGN](docs/DESIGN.md) | Arsitektur, peta halaman, istilah, dan design token |
-| [Mockup](docs/ui/) | Rancangan tampilan desktop dan mobile |
-| [Logo](docs/logo/) | Ikon, versi horizontal, dan lembar presentasi |
 
 ---
 
