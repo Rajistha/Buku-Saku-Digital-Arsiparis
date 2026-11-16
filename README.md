@@ -68,15 +68,9 @@ npm run dev        # buka http://localhost:5173
 
 ### 🖼️ Gambar pratinjau tautan
 
-Saat tautan dikirim lewat WhatsApp, LinkedIn, atau X, yang tampil adalah gambar [`web/public/og-image.jpg`](web/public/og-image.jpg) (1200 × 630, 77 KB). Aplikasi pesan hanya bisa membaca gambar ini dari **alamat lengkap**, jadi alamat situs diisi otomatis saat build:
+Saat tautan dikirim lewat WhatsApp, LinkedIn, atau X, yang tampil adalah gambar [`web/public/og-image.jpg`](web/public/og-image.jpg) (1200 × 630, 77 KB). Aplikasi pesan hanya bisa membaca gambar ini dari **alamat lengkap**, jadi alamat situs ditulis di `ALAMAT_SITUS` pada [`web/vite.config.ts`](web/vite.config.ts) (saat ini `https://buku-saku.rajistha.my.id`).
 
-| Hosting | Yang perlu dilakukan |
-|---|---|
-| Netlify | Tidak ada. Alamat situs terisi otomatis |
-| Vercel | Tidak ada. Alamat produksi terisi otomatis |
-| GitHub Pages / lainnya | Build dengan `SITE_URL`, mis. `SITE_URL=https://username.github.io/nama-repo npm run build` |
-
-Bila `SITE_URL` belum diisi, build tetap berhasil tetapi menampilkan peringatan, dan gambar pratinjau tidak akan muncul. Sumber gambarnya ada di [`docs/logo/src/og-image.html`](docs/logo/src/og-image.html).
+Bila pindah domain, ubah `ALAMAT_SITUS`, atau build dengan `SITE_URL=https://domain-baru npm run build`. Variabel otomatis dari hosting sengaja tidak dipakai, karena di Vercel isinya alamat `*.vercel.app`, bukan domain sendiri. Sumber gambarnya ada di [`docs/logo/src/og-image.html`](docs/logo/src/og-image.html).
 
 Setelah tayang, periksa pratinjaunya di [opengraph.xyz](https://www.opengraph.xyz) atau [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/). WhatsApp menyimpan pratinjau lama cukup lama, jadi untuk mencobanya kirim tautan dengan tambahan `?v=2` di belakangnya.
 
