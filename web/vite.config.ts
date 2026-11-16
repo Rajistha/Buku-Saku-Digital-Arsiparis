@@ -55,6 +55,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,json}'],
         globIgnores: ['**/pergub-64-2023.pdf', '**/og-image.jpg'],
         navigateFallback: 'index.html',
+        // PDF dibuka di tab baru (sebuah navigasi). Tanpa pengecualian ini service worker
+        // mengembalikan index.html sehingga yang terbuka malah aplikasinya, bukan PDF.
+        navigateFallbackDenylist: [/\.pdf(\?.*)?$/i],
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
