@@ -66,7 +66,9 @@ export default function PdfViewer() {
   const zoomRef = useRef(1)
   const geserTertunda = useRef<{ left: number; top: number } | null>(null)
   const jari = useRef(new Map<number, { x: number; y: number }>())
-  const gestur = useRef({ jarak: 0, zoom: 1, cubit: false, x: 0, y: 0, t: 0, tapT: 0 })
+  const bungkus = useRef<HTMLDivElement>(null)
+  // cubit: selama jari bergerak hanya CSS transform yang berubah (tanpa render ulang dan reflow), ukuran asli diterapkan saat jari diangkat
+  const gestur = useRef({ jarak: 0, zoom: 1, cubit: false, hidup: false, x: 0, y: 0, t: 0, tapT: 0, k: 1, mx: 0, my: 0, mx0: 0, my0: 0, ox: 0, oy: 0, wl: 0, wt: 0 })
 
   const total = doc?.numPages ?? 0
   const diminta = Math.max(1, Math.floor(Number(hlm)) || 1)
@@ -120,11 +122,17 @@ export default function PdfViewer() {
       const tampil = lebar * zoomGambar
       const kualitas = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3, Math.max(1, 4096 / tampil))
       const vp = page.getViewport({ scale: (tampil / dasar.width) * kualitas, rotation: rotasi })
-      cv.width = Math.floor(vp.width)
-      cv.height = Math.floor(vp.height)
-      tugas = page.render({ canvas: cv, viewport: vp })
+      // gambar di kanvas tersembunyi lalu salin sekaligus: kanvas yang tampil tidak sempat kosong/berkedip saat resolusi berganti
+      const tmp = document.createElement('canvas')
+      tmp.width = Math.floor(vp.width)
+      tmp.height = Math.floor(vp.height)
+      tugas = page.render({ canvas: tmp, viewport: vp })
       await tugas.promise
-      if (!batal) setMenggambar(false)
+      if (batal) return
+      cv.width = tmp.width
+      cv.height = tmp.height
+      cv.getContext('2d')?.drawImage(tmp, 0, 0)
+      setMenggambar(false)
     })().catch((e: unknown) => {
       if (batal || (e as { name?: string } | null)?.name === 'RenderingCancelledException') return
       setStatus('gagal')
@@ -151,6 +159,13 @@ export default function PdfViewer() {
       area.current.scrollTop = g.top
     }
     geserTertunda.current = null
+    // ukuran asli sudah terpasang, jadi transform sementara dari gestur cubit dilepas pada frame yang sama
+    const w = bungkus.current
+    if (w) {
+      w.style.transform = ''
+      w.style.transformOrigin = ''
+      w.style.willChange = ''
+    }
   }, [zoom])
   // gambar ulang dengan resolusi baru setelah zoom berhenti berubah
   useEffect(() => {
@@ -176,16 +191,32 @@ export default function PdfViewer() {
   // replace: tombol Kembali membawa pengguna keluar dari penampil, bukan mundur halaman demi halaman
   const kembali = () => (key !== 'default' ? nav(-1) : nav(kode ? `/telusur/${kode}` : '/', { replace: true }))
 
-  /** ubah zoom dengan titik (koordinat layar) yang dipertahankan; tanpa titik = tengah area */
-  const setZoomDi = (baru: number, cx?: number, cy?: number) => {
+  /**
+   * Terapkan zoom z dengan titik fokus (fx,fy; koordinat layar) yang tetap di tempatnya, atau pindah ke (nx,ny)
+   * bila jari bergeser selagi mencubit. Tanpa titik = tengah area. `geo` = ukuran awal bila transform sedang berjalan.
+   */
+  const setZoomDi = (baru: number, fx?: number, fy?: number, nx?: number, ny?: number, geo?: { ox: number; oy: number; wl: number; wt: number }) => {
     const el = area.current
+    const w = bungkus.current
     const z = batas(baru)
-    if (!el || z === zoomRef.current) return
-    const r = el.getBoundingClientRect()
-    const px = (cx ?? r.left + r.width / 2) - r.left
-    const py = (cy ?? r.top + r.height / 2) - r.top
+    if (!el || !w) return
+    if (z === zoomRef.current) {
+      w.style.transform = ''
+      w.style.transformOrigin = ''
+      w.style.willChange = ''
+      return
+    }
+    const ar = el.getBoundingClientRect()
+    const x0 = fx ?? ar.left + ar.width / 2
+    const y0 = fy ?? ar.top + ar.height / 2
+    let g = geo
+    if (!g) {
+      const wr = w.getBoundingClientRect()
+      g = { ox: x0 - wr.left, oy: y0 - wr.top, wl: wr.left - ar.left + el.scrollLeft, wt: wr.top - ar.top + el.scrollTop }
+    }
     const rasio = z / zoomRef.current
-    geserTertunda.current = { left: (el.scrollLeft + px) * rasio - px, top: (el.scrollTop + py) * rasio - py }
+    // titik halaman di bawah fokus awal diletakkan di fokus akhir
+    geserTertunda.current = { left: g.wl + g.ox * rasio - ((nx ?? x0) - ar.left), top: g.wt + g.oy * rasio - ((ny ?? y0) - ar.top) }
     zoomRef.current = z
     setZoom(z)
   }
@@ -199,14 +230,36 @@ export default function PdfViewer() {
     const [a, b] = [...jari.current.values()]
     return Math.hypot(a.x - b.x, a.y - b.y)
   }
+  const tengahJari = () => {
+    const [a, b] = [...jari.current.values()]
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+  }
   const onDown = (e: PE) => {
     if (e.pointerType === 'mouse') return
     jari.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     const g = gestur.current
     if (jari.current.size === 2) {
+      const el = area.current
+      const w = bungkus.current
       g.cubit = true
       g.jarak = jarakJari()
       g.zoom = zoomRef.current
+      g.k = 1
+      if (el && w && !g.hidup) {
+        const m = tengahJari()
+        const wr = w.getBoundingClientRect()
+        const ar = el.getBoundingClientRect()
+        g.mx = g.mx0 = m.x
+        g.my = g.my0 = m.y
+        g.ox = m.x - wr.left
+        g.oy = m.y - wr.top
+        g.wl = wr.left - ar.left + el.scrollLeft
+        g.wt = wr.top - ar.top + el.scrollTop
+        w.style.transformOrigin = `${g.ox}px ${g.oy}px`
+        w.style.willChange = 'transform'
+        el.style.overflow = 'hidden' // cegah gulir bawaan browser bersaing dengan transform selama mencubit
+        g.hidup = true
+      }
     } else if (jari.current.size === 1) {
       g.cubit = false
       g.x = e.clientX
@@ -218,15 +271,28 @@ export default function PdfViewer() {
     if (!jari.current.has(e.pointerId)) return
     jari.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     const g = gestur.current
-    if (jari.current.size === 2 && g.jarak > 0) {
-      const [a, b] = [...jari.current.values()]
-      setZoomDi(g.zoom * (jarakJari() / g.jarak), (a.x + b.x) / 2, (a.y + b.y) / 2)
+    const w = bungkus.current
+    if (jari.current.size === 2 && g.hidup && g.jarak > 0 && w) {
+      const m = tengahJari()
+      g.k = batas(g.zoom * (jarakJari() / g.jarak)) / g.zoom
+      g.mx = m.x
+      g.my = m.y
+      w.style.transform = `translate(${m.x - g.mx0}px, ${m.y - g.my0}px) scale(${g.k})`
     }
+  }
+  /** jari diangkat: ukuran sebenarnya diterapkan sekali, dari transform sementara */
+  const akhiriCubit = () => {
+    const g = gestur.current
+    g.hidup = false
+    if (area.current) area.current.style.overflow = ''
+    const z = g.zoom * g.k
+    setZoomDi(Math.abs(z - 1) < 0.03 ? 1 : z, g.mx0, g.my0, g.mx, g.my, { ox: g.ox, oy: g.oy, wl: g.wl, wt: g.wt })
   }
   const onUp = (e: PE) => {
     if (!jari.current.delete(e.pointerId)) return
     const g = gestur.current
     if (g.cubit) {
+      if (g.hidup) akhiriCubit()
       if (jari.current.size === 0) g.cubit = false
       return
     }
@@ -328,7 +394,7 @@ export default function PdfViewer() {
                 </div>
               )}
               {!doc && <div className="pdfv-kerangka skel" />}
-              <div className="pdfv-zoom" style={{ width: `${zoom * 100}%`, display: doc ? undefined : 'none' }}>
+              <div className="pdfv-zoom" ref={bungkus} style={{ width: `${zoom * 100}%`, display: doc ? undefined : 'none' }}>
                 <canvas ref={kanvas} className="pdfv-kanvas" aria-label={`Halaman ${halaman} Peraturan Gubernur Bali Nomor 64 Tahun 2023`} />
               </div>
             </>
