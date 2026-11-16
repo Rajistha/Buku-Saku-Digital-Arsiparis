@@ -43,7 +43,7 @@ Pergub Bali No. 64/2023 memuat daftar kode klasifikasi arsip di PDF setebal **89
 | ✏️ **Toleran salah ketik** | `perjalnan dinas` otomatis diperbaiki, dan pengguna diberi tahu |
 | 🌳 **Telusur** | Kolom bertingkat dari bidang sampai tingkat 4, dengan kartu detail kode terpilih |
 | 📋 **Salin kode** | Satu klik, siap ditempel di nomor surat |
-| 📖 **Buka PDF** | Langsung ke halaman sumber di Pergub |
+| 📖 **Buka PDF** | Langsung ke halaman sumber di Pergub. Di HP dan aplikasi terpasang, PDF dibuka di penampil dalam aplikasi dengan tombol **Kembali** dan navigasi halaman; di desktop memakai penampil browser |
 | 🕘 **Terakhir dilihat** | Disimpan di perangkat sendiri, tanpa akun |
 | 📱 **Responsif** | Sidebar di desktop; bilah atas dan menu bawah di HP |
 | 📲 **Bisa dipasang & offline (PWA)** | Pasang ke layar utama HP atau laptop. Cari dan telusur tetap jalan tanpa internet; hanya PDF yang perlu online |

@@ -223,7 +223,7 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
 
 /* ---------- PWA ---------- */
 .btn.sm { padding: 7px 12px; font-size: 12px; border-radius: 9px; }
-.btn.mati { opacity: .6; cursor: not-allowed; }
+.mati { opacity: .6; cursor: not-allowed; }
 .side-pasang { margin: auto 18px 12px; }
 .side-pasang + .side-note { margin-top: 0; }
 .pasang-tentang { margin-top: 10px; }
@@ -231,6 +231,27 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
 .pwa-bar.off { background: #6F4A00; padding: 10px 18px; }
 .pwa-bar .tutup { color: #fff; opacity: .7; display: grid; place-items: center; padding: 6px; border-radius: 8px; }
 .pwa-bar .tutup:hover { opacity: 1; background: rgba(255, 255, 255, .12); }
+
+/* ---------- penampil PDF ---------- */
+.pdfv { height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: #E4E6F4; }
+.pdfv-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; padding-top: calc(10px + env(safe-area-inset-top)); background: var(--surface); border-bottom: 1px solid var(--border); flex: none; }
+.pdfv-judul { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 10px; white-space: nowrap; overflow: hidden; }
+.pdfv-judul b { font-size: 14px; }
+.pdfv-judul .mono { color: var(--primary); font-size: 12px; }
+.pdfv-nav { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); flex: none; }
+.pdfv-nav input { width: 52px; text-align: center; border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 4px; background: var(--bg); color: var(--text); font-weight: 600; outline: 0; }
+.pdfv-nav input:focus { border-color: var(--primary); }
+.pdfv-nav .ikon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; background: var(--primary-50); color: var(--primary); }
+.pdfv-nav .ikon:disabled { opacity: .4; cursor: not-allowed; }
+.pdfv-area { flex: 1; overflow: auto; padding: 14px 12px 28px; -webkit-overflow-scrolling: touch; }
+.pdfv-halaman { position: relative; width: 100%; max-width: 900px; margin: 0 auto; min-height: 240px; }
+.pdfv-kanvas { display: block; width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 6px 24px rgba(30, 34, 64, .18); }
+.pdfv-muat { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; align-items: center; gap: 10px; background: #1E2240; color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 600; box-shadow: 0 8px 20px rgba(30, 34, 64, .3); white-space: nowrap; }
+.pdfv-muat .spin { width: 16px; height: 16px; border-width: 2px; border-color: rgba(255, 255, 255, .3); border-top-color: #fff; }
+.pdfv-galat { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 56px 16px; color: var(--muted); background: var(--surface); border-radius: 16px; }
+.pdfv-galat svg.ic { width: 28px; height: 28px; }
+.pdfv-galat b { color: var(--text); font-size: 16px; }
+.boot span { font-size: 13px; }
 
 /* ---------- responsif ---------- */
 @media (max-width: 1180px) {
@@ -271,6 +292,8 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .toast { bottom: 90px; }
   .pwa-bar { bottom: 86px; }
+  .pdfv-bar { gap: 8px; padding-left: 12px; padding-right: 12px; }
+  .pdfv-judul b { display: none; }
   .topnav { justify-content: space-between; }
   .topnav .pasang { flex: none; padding: 7px 11px; font-size: 12px; gap: 6px; }
   .topnav .pasang svg.ic { width: 15px; height: 15px; }

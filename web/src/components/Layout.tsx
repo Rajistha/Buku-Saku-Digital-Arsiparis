@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { InstallButton, PwaStatus } from '../pwa.tsx'
+import { PdfLink } from './PdfLink.tsx'
 import { Icon, Logo } from './Icon.tsx'
 
 const MENU = [
@@ -66,9 +67,7 @@ export default function Layout() {
           <b>Sumber</b>
           Pergub Bali No. 64 Tahun 2023, Lampiran I (hlm 11–149).
           <br />
-          <a href="pergub-64-2023.pdf" target="_blank" rel="noreferrer">
-            Buka PDF
-          </a>
+          <PdfLink halaman={11}>Buka PDF</PdfLink>
         </div>
       </aside>
 

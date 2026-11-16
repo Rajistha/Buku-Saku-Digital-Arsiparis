@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTitle } from '../components/ui.tsx'
+import { PdfLink } from '../components/PdfLink.tsx'
 import { InstallButton } from '../pwa.tsx'
 import { BIDANG_FUNGSI, fmt, levelOf } from '../data.ts'
 import { useData } from '../state.tsx'
@@ -41,9 +42,9 @@ export default function About() {
       <div className="disclaimer">
         <b>Bukan aplikasi resmi pemerintah.</b> Buku saku ini hanya memudahkan pencarian. Dasar hukumnya tetap Peraturan Gubernur Bali Nomor 64 Tahun 2023.
         Bila ada perbedaan, naskah resmi yang berlaku. Setiap kode menyertakan nomor halaman PDF agar mudah dicek.{' '}
-        <a href="pergub-64-2023.pdf" target="_blank" rel="noreferrer" className="link">
+        <PdfLink halaman={1} className="link">
           Buka PDF Pergub
-        </a>
+        </PdfLink>
       </div>
 
       <section className="card prose">

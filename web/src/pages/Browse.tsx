@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BidangIcon, Icon } from '../components/Icon.tsx'
 import { CopyButton, pushRecent, useTitle } from '../components/ui.tsx'
-import { useOnline } from '../pwa.tsx'
+import { PdfLink } from '../components/PdfLink.tsx'
 import { ancestors, hasChildren, parentOf, type Data, type Item } from '../data.ts'
 import { useData } from '../state.tsx'
 
@@ -12,7 +12,6 @@ type Kolom = { judul: string; items: Item[]; aktif?: string }
 function Detail({ it, d }: { it: Item; d: Data }) {
   const jalur = ancestors(d, it.k).slice(0, -1)
   const anak = d.children.get(it.k)?.length ?? 0
-  const online = useOnline()
   return (
     <section className="card detail" aria-label={`Detail ${it.k}`}>
       <div>
@@ -44,17 +43,20 @@ function Detail({ it, d }: { it: Item; d: Data }) {
           <CopyButton kode={it.k} className="btn primary">
             Salin kode
           </CopyButton>
-          {online ? (
-            <a className="btn ghost" href={`pergub-64-2023.pdf#page=${it.h}`} target="_blank" rel="noreferrer">
-              <Icon name="file" />
-              Buka PDF hlm {it.h}
-            </a>
-          ) : (
-            <span className="btn ghost mati" title="PDF tidak disimpan untuk offline">
-              <Icon name="wifiOff" />
-              PDF perlu internet
-            </span>
-          )}
+          <PdfLink
+            halaman={it.h}
+            kode={it.k}
+            className="btn ghost"
+            offline={
+              <>
+                <Icon name="wifiOff" />
+                PDF perlu internet
+              </>
+            }
+          >
+            <Icon name="file" />
+            Buka PDF hlm {it.h}
+          </PdfLink>
         </div>
       </div>
       <div>

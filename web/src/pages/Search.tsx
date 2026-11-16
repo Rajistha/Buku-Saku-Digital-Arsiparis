@@ -83,7 +83,9 @@ export default function Search() {
     [d, hasil, saring],
   )
 
-  useEffect(() => setBatas(HALAMAN), [q, saring])
+  useEffect(() => {
+    setBatas(HALAMAN)
+  }, [q, saring])
   useTitle(q.trim() || 'Cari Kode')
 
   const ubah = (v: string) => (v ? setParams({ q: v }, { replace: true }) : setParams({}, { replace: true }))
