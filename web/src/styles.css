@@ -333,3 +333,11 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
 .sk-teks { flex: 1; display: grid; gap: 8px; }
 .pdfv-kerangka { width: 100%; aspect-ratio: 1 / 1.414; border-radius: 4px; box-shadow: 0 6px 24px rgba(30, 34, 64, .12); }
 @media (max-width: 900px) { .sk-nav-it { padding: 10px 12px; } .sk-baris { padding: 14px; gap: 12px; } }
+.pdfv-ctl button.putar { position: relative; }
+.pdfv-ctl button.putar.sorot::after { content: ''; position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px #1E2240; animation: denyut 1.6s ease-in-out infinite; }
+@keyframes denyut { 50% { transform: scale(1.35); } }
+
+/* tanpa zoom halaman: cubit dan ketuk dua kali tidak memperbesar (penampil PDF punya zoom sendiri) */
+html { touch-action: manipulation; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* iOS memperbesar layar saat kolom isian berfont < 16px difokuskan */
+@media (pointer: coarse) { input, textarea, select { font-size: 16px !important; } }

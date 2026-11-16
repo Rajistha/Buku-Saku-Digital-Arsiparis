@@ -11,6 +11,16 @@ pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
 const PDF = 'pergub-64-2023.pdf'
 const ZOOM_MIN = 1
+// putaran halaman (0/90/180/270) diingat selama sesi, agar halaman landscape berikutnya tetap terputar
+const KUNCI_PUTAR = 'pdf-putar'
+function putaranAwal(): number {
+  try {
+    const n = Number(sessionStorage.getItem(KUNCI_PUTAR))
+    return [0, 90, 180, 270].includes(n) ? n : 0
+  } catch {
+    return 0
+  }
+}
 const ZOOM_MAX = 4
 const LANGKAH = [1, 1.5, 2, 3, 4]
 const batas = (z: number) => Math.min(Math.max(z, ZOOM_MIN), ZOOM_MAX)
@@ -50,6 +60,8 @@ export default function PdfViewer() {
   const kanvas = useRef<HTMLCanvasElement>(null)
   // zoom: `zoom` mengubah ukuran tampilan seketika, `zoomGambar` (tertunda) menentukan resolusi gambar
   const [zoom, setZoom] = useState(1)
+  const [putar, setPutar] = useState(putaranAwal)
+  const [miring, setMiring] = useState(false) // halaman aslinya landscape
   const [zoomGambar, setZoomGambar] = useState(1)
   const zoomRef = useRef(1)
   const geserTertunda = useRef<{ left: number; top: number } | null>(null)
@@ -101,11 +113,13 @@ export default function PdfViewer() {
       const page = await doc.getPage(halaman)
       const cv = kanvas.current
       if (batal || !cv) return
-      const dasar = page.getViewport({ scale: 1 })
+      const rotasi = (page.rotate + putar) % 360
+      const dasar = page.getViewport({ scale: 1, rotation: rotasi })
+      setMiring(page.getViewport({ scale: 1 }).width > page.getViewport({ scale: 1 }).height)
       // resolusi lebih tinggi agar tetap tajam saat layar dicubit/diperbesar
       const tampil = lebar * zoomGambar
       const kualitas = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3, Math.max(1, 4096 / tampil))
-      const vp = page.getViewport({ scale: (tampil / dasar.width) * kualitas })
+      const vp = page.getViewport({ scale: (tampil / dasar.width) * kualitas, rotation: rotasi })
       cv.width = Math.floor(vp.width)
       cv.height = Math.floor(vp.height)
       tugas = page.render({ canvas: cv, viewport: vp })
@@ -119,7 +133,7 @@ export default function PdfViewer() {
       batal = true
       tugas?.cancel()
     }
-  }, [doc, halaman, lebar, zoomGambar])
+  }, [doc, halaman, lebar, zoomGambar, putar])
 
   // kurung kurawal: nilai kembalian efek dianggap fungsi pembersih oleh React (scrollTo mengembalikan Promise)
   useEffect(() => {
@@ -143,6 +157,19 @@ export default function PdfViewer() {
     const t = setTimeout(() => setZoomGambar(zoom), 250)
     return () => clearTimeout(t)
   }, [zoom])
+
+  const putarHalaman = () => {
+    const baru = (putar + 90) % 360
+    setPutar(baru)
+    try {
+      sessionStorage.setItem(KUNCI_PUTAR, String(baru))
+    } catch {
+      // penyimpanan sesi bisa diblokir; putaran tetap berlaku selama halaman terbuka
+    }
+    area.current?.scrollTo(0, 0)
+  }
+  // di layar potret, halaman landscape yang belum diputar diberi petunjuk pada tombol putar
+  const sarankanPutar = miring && putar === 0 && typeof window !== 'undefined' && window.matchMedia('(orientation: portrait)').matches
 
   const q = kode ? `?k=${encodeURIComponent(kode)}` : ''
   const ke = (n: number) => nav(`/pdf/${Math.min(Math.max(1, n), total || n)}${q}`, { replace: true })
@@ -313,6 +340,15 @@ export default function PdfViewer() {
         <div className="pdfv-ctl" role="group" aria-label="Zoom dan halaman">
           <button type="button" disabled={halaman <= 1} onClick={() => ke(halaman - 1)} aria-label="Halaman sebelumnya">
             <Icon name="chevl" />
+          </button>
+          <button
+            type="button"
+            className={'putar' + (sarankanPutar ? ' sorot' : '')}
+            onClick={putarHalaman}
+            aria-label={`Putar halaman 90 derajat${putar ? ` (sekarang ${putar}°)` : ''}`}
+            title="Putar halaman"
+          >
+            <Icon name="rotate" />
           </button>
           <button type="button" disabled={zoom <= ZOOM_MIN} onClick={() => langkahZoom(-1)} aria-label="Perkecil">
             −
