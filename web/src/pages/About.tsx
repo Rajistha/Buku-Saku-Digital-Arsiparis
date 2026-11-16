@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTitle } from '../components/ui.tsx'
+import { InstallButton } from '../pwa.tsx'
 import { BIDANG_FUNGSI, fmt, levelOf } from '../data.ts'
 import { useData } from '../state.tsx'
 
@@ -65,6 +66,20 @@ export default function About() {
           </li>
           <li>Sebanyak 20 jenis arsip yang tidak terbaca di Lampiran II belum diperiksa satu per satu. Datanya tetap diambil dari Lampiran I.</li>
         </ul>
+      </section>
+
+      <section className="card prose">
+        <h2>Pasang di HP atau laptop</h2>
+        <p>Buku saku ini bisa dipasang seperti aplikasi dan tetap bisa dipakai untuk mencari dan menelusur tanpa internet. Hanya PDF Pergub yang memerlukan internet.</p>
+        <ul>
+          <li>
+            <b>Android / Chrome / Edge:</b> tekan tombol di bawah, atau buka menu browser lalu pilih <i>Instal aplikasi</i> atau <i>Tambahkan ke layar utama</i>.
+          </li>
+          <li>
+            <b>iPhone / iPad (Safari):</b> tekan tombol <i>Bagikan</i>, lalu pilih <i>Tambahkan ke Layar Utama</i>.
+          </li>
+        </ul>
+        <InstallButton className="pasang-tentang" />
       </section>
 
       <section className="card prose">

@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 /**
  * Alamat situs untuk tag og:image dan og:url. Pratinjau tautan (WhatsApp, LinkedIn, X)
@@ -24,5 +25,54 @@ function isiAlamatSitus(): Plugin {
 // base './' agar hasil build bisa dibuka dari sub-folder mana pun (Netlify, GitHub Pages, dsb.)
 export default defineConfig({
   base: './',
-  plugins: [react(), isiAlamatSitus()],
+  plugins: [
+    react(),
+    isiAlamatSitus(),
+    VitePWA({
+      // pengguna diberi tahu bila ada versi baru, bukan dimuat ulang diam-diam
+      registerType: 'prompt',
+      // ikon sudah tercakup oleh globPatterns; tanpa ini setiap ikon tercatat dua kali
+      includeManifestIcons: false,
+      manifest: {
+        name: 'Buku Saku Digital Pemprov Bali',
+        short_name: 'Buku Saku',
+        description: 'Cari kode dan nama klasifikasi arsip dari Pergub Bali No. 64/2023.',
+        lang: 'id',
+        start_url: './',
+        scope: './',
+        display: 'standalone',
+        background_color: '#F5F6FD',
+        theme_color: '#5468E7',
+        icons: [
+          { src: 'logo-icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'logo-icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'logo-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+      },
+      workbox: {
+        // aplikasi + data klasifikasi disimpan untuk offline.
+        // PDF (7 MB) dan gambar pratinjau tautan sengaja tidak ikut agar unduhan awal tetap ringan.
+        globPatterns: ['**/*.{js,css,html,svg,png,json}'],
+        globIgnores: ['**/pergub-64-2023.pdf', '**/og-image.jpg'],
+        navigateFallback: 'index.html',
+        cleanupOutdatedCaches: true,
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'font-css' },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'font-berkas',
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
+    }),
+  ],
 })

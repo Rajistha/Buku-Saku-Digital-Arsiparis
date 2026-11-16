@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { InstallButton, PwaStatus } from '../pwa.tsx'
 import { Icon, Logo } from './Icon.tsx'
 
 const MENU = [
@@ -41,6 +42,7 @@ export default function Layout() {
             <small>Pemprov Bali</small>
           </div>
         </Link>
+        <InstallButton className="sm pasang" />
       </header>
 
       <aside className="sidebar">
@@ -59,6 +61,7 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
+        <InstallButton className="side-pasang" />
         <div className="side-note">
           <b>Sumber</b>
           Pergub Bali No. 64 Tahun 2023, Lampiran I (hlm 11–149).
@@ -72,6 +75,8 @@ export default function Layout() {
       <main className="main" id="isi">
         <Outlet />
       </main>
+
+      <PwaStatus />
 
       <nav className="bnav" aria-label="Menu utama">
         {MENU.map((m, i) => (

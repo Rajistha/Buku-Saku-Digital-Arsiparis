@@ -14,6 +14,7 @@
   <img alt="Data" src="https://img.shields.io/badge/data-2.989%20kode-2B37A8">
   <img alt="Uji" src="https://img.shields.io/badge/uji-17%20lulus-13804B">
   <img alt="Tanpa server" src="https://img.shields.io/badge/backend-tidak%20ada-FFC861">
+  <img alt="PWA" src="https://img.shields.io/badge/PWA-offline-5468E7">
 </p>
 
 <p align="center">
@@ -45,6 +46,7 @@ Pergub Bali No. 64/2023 memuat daftar kode klasifikasi arsip di PDF setebal **89
 | 📖 **Buka PDF** | Langsung ke halaman sumber di Pergub |
 | 🕘 **Terakhir dilihat** | Disimpan di perangkat sendiri, tanpa akun |
 | 📱 **Responsif** | Sidebar di desktop; bilah atas dan menu bawah di HP |
+| 📲 **Bisa dipasang & offline (PWA)** | Pasang ke layar utama HP atau laptop. Cari dan telusur tetap jalan tanpa internet; hanya PDF yang perlu online |
 | ⌨️ **Pintasan** | Tekan `/` atau `Ctrl+K` dari halaman mana pun untuk mencari |
 
 ## 🚀 Mulai cepat
@@ -141,6 +143,7 @@ Buku Saku/
 | Gaya | CSS biasa, tanpa framework |
 | Pencarian | Buatan sendiri, berjalan di browser |
 | Navigasi | React Router (hash) |
+| Offline | vite-plugin-pwa (Workbox) |
 | Ekstraksi data | Python + pdfplumber |
 | Font | Plus Jakarta Sans, JetBrains Mono |
 

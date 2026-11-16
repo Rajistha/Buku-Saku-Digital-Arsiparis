@@ -221,6 +221,17 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
 .topnav { display: none; }
 .up { display: none; align-self: flex-start; padding: 8px 14px; }
 
+/* ---------- PWA ---------- */
+.btn.sm { padding: 7px 12px; font-size: 12px; border-radius: 9px; }
+.btn.mati { opacity: .6; cursor: not-allowed; }
+.side-pasang { margin: auto 18px 12px; }
+.side-pasang + .side-note { margin-top: 0; }
+.pasang-tentang { margin-top: 10px; }
+.pwa-bar { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 40; display: flex; align-items: center; gap: 12px; background: #1E2240; color: #fff; padding: 8px 8px 8px 18px; border-radius: 14px; font-size: 13px; font-weight: 600; box-shadow: 0 12px 30px rgba(30, 34, 64, .3); width: max-content; max-width: calc(100vw - 32px); }
+.pwa-bar.off { background: #6F4A00; padding: 10px 18px; }
+.pwa-bar .tutup { color: #fff; opacity: .7; display: grid; place-items: center; padding: 6px; border-radius: 8px; }
+.pwa-bar .tutup:hover { opacity: 1; background: rgba(255, 255, 255, .12); }
+
 /* ---------- responsif ---------- */
 @media (max-width: 1180px) {
   .main { padding: 24px 32px 40px; }
@@ -259,6 +270,10 @@ button.chip:hover, a.chip:hover { background: var(--primary-50); }
   .detail .none { grid-column: auto; }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .toast { bottom: 90px; }
+  .pwa-bar { bottom: 86px; }
+  .topnav { justify-content: space-between; }
+  .topnav .pasang { flex: none; padding: 7px 11px; font-size: 12px; gap: 6px; }
+  .topnav .pasang svg.ic { width: 15px; height: 15px; }
   .tbl { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
