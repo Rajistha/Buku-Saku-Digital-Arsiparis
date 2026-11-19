@@ -1,11 +1,14 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useOnline } from '../pwa.tsx'
+import { PERATURAN_UTAMA } from '../peraturan.ts'
 
 type Props = {
+  /** id peraturan (lihat peraturan.ts); bawaannya Pergub 64/2023 */
+  peraturan?: string
   /** nomor halaman PDF yang dituju */
   halaman?: number
-  /** kode klasifikasi asal, untuk ditampilkan di penampil dan sebagai tujuan tombol Kembali */
+  /** rujukan asal (kode klasifikasi atau nomor pasal), untuk ditampilkan di penampil dan sebagai tujuan tombol Kembali */
   kode?: string
   className?: string
   children: ReactNode
@@ -16,7 +19,7 @@ type Props = {
 // PDF selalu dibuka di penampil dalam aplikasi (zoom, geser, tombol Kembali), baik di HP, aplikasi terpasang,
 // maupun desktop. Di aplikasi terpasang tak ada bilah browser, dan Chrome Android biasanya mengunduh PDF
 // alih-alih menampilkannya, jadi satu penampil untuk semua perangkat paling konsisten.
-export function PdfLink({ halaman, kode, className = '', children, offline }: Props) {
+export function PdfLink({ peraturan = PERATURAN_UTAMA.id, halaman, kode, className = '', children, offline }: Props) {
   const online = useOnline()
 
   if (!online)
@@ -26,7 +29,7 @@ export function PdfLink({ halaman, kode, className = '', children, offline }: Pr
       </span>
     )
   return (
-    <Link to={`/pdf/${halaman ?? 1}${kode ? `?k=${encodeURIComponent(kode)}` : ''}`} className={className}>
+    <Link to={`/pdf/${peraturan}/${halaman ?? 1}${kode ? `?k=${encodeURIComponent(kode)}` : ''}`} className={className}>
       {children}
     </Link>
   )

@@ -5,11 +5,15 @@ import { buildData, type Aturan, type Data, type Item } from './data.ts'
 
 const DataCtx = createContext<Data | null>(null)
 
+// data disimpan selama aplikasi terbuka: pindah ke penampil PDF atau ke peraturan lain lalu kembali tidak memuat ulang
+let simpanan: Data | null = null
+
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<Data | null>(null)
+  const [data, setData] = useState<Data | null>(simpanan)
   const [err, setErr] = useState<string | null>(null)
 
   useEffect(() => {
+    if (simpanan) return
     let batal = false
     const ambil = <T,>(url: string) =>
       fetch(url).then((r) => {
@@ -18,7 +22,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       })
     Promise.all([ambil<Item[]>('data/klasifikasi.json'), ambil<Record<string, Aturan>>('data/aturan.json')])
       .then(([items, aturan]) => {
-        if (!batal) setData(buildData(items, aturan))
+        simpanan = buildData(items, aturan)
+        if (!batal) setData(simpanan)
       })
       .catch((e: unknown) => {
         if (!batal) setErr(String(e))

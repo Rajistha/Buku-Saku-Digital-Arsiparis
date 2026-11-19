@@ -54,7 +54,7 @@ export default defineConfig({
         // PDF (7 MB) dan gambar pratinjau tautan sengaja tidak ikut agar unduhan awal tetap ringan.
         globPatterns: ['**/*.{js,css,html,svg,png,json}'],
         // penampil PDF (pdf.js, ±0,5 MB) hanya berguna saat online, jadi tidak ikut disimpan
-        globIgnores: ['**/pergub-64-2023.pdf', '**/og-image.jpg', '**/assets/PdfViewer-*.js'],
+        globIgnores: ['**/*.pdf', '**/og-image.jpg', '**/assets/PdfViewer-*.js'],
         navigateFallback: 'index.html',
         // PDF dibuka di tab baru (sebuah navigasi). Tanpa pengecualian ini service worker
         // mengembalikan index.html sehingga yang terbuka malah aplikasinya, bukan PDF.

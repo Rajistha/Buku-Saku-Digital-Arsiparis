@@ -6,10 +6,11 @@ import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import { Icon } from '../components/Icon.tsx'
 import { useTitle } from '../components/ui.tsx'
 import { useOnline } from '../pwa.tsx'
+import { tutupSplash } from '../splash.ts'
+import { cariPeraturan, PERATURAN_UTAMA } from '../peraturan.ts'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
-const PDF = 'pergub-64-2023.pdf'
 const ZOOM_MIN = 1
 // putaran halaman hanya dua posisi (0 = normal, 90 = diputar) dan diingat selama sesi, agar halaman landscape berikutnya tetap terputar
 const KUNCI_PUTAR = 'pdf-putar'
@@ -28,22 +29,25 @@ const batas = (z: number) => Math.min(Math.max(z, ZOOM_MIN), ZOOM_MAX)
 // Dokumen disimpan selama aplikasi terbuka: membuka penampil lagi (atau pindah ke kode lain)
 // tidak mengunduh ulang. Untuk PDF ini pembukaan pertama ±7 MB karena satu bagian besar yang
 // dipakai bersama oleh seluruh halaman, jadi pengunduhan ulang yang sia-sia perlu dihindari.
-let dokumen: Promise<PDFDocumentProxy> | null = null
-function muatDokumen(): Promise<PDFDocumentProxy> {
-  if (!dokumen) {
+const dokumen = new Map<string, Promise<PDFDocumentProxy>>()
+function muatDokumen(berkas: string): Promise<PDFDocumentProxy> {
+  let tugasAda = dokumen.get(berkas)
+  if (!tugasAda) {
     // disableAutoFetch hanya bekerja bila disableStream juga dinyalakan
-    const tugas = pdfjs.getDocument({ url: new URL(PDF, document.baseURI).href, disableAutoFetch: true, disableStream: true })
-    dokumen = tugas.promise.catch((e: unknown) => {
-      dokumen = null // gagal: coba lagi bisa mengulang
+    const tugas = pdfjs.getDocument({ url: new URL(berkas, document.baseURI).href, disableAutoFetch: true, disableStream: true })
+    tugasAda = tugas.promise.catch((e: unknown) => {
+      dokumen.delete(berkas) // gagal: coba lagi bisa mengulang
       throw e
     })
+    dokumen.set(berkas, tugasAda)
   }
-  return dokumen
+  return tugasAda
 }
 
 /** Penampil PDF di dalam aplikasi, dengan tombol Kembali (aplikasi terpasang tidak punya bilah browser). */
 export default function PdfViewer() {
-  const { hlm } = useParams()
+  const { id, hlm } = useParams()
+  const peraturan = cariPeraturan(id) ?? PERATURAN_UTAMA
   const [params] = useSearchParams()
   const kode = params.get('k')
   const nav = useNavigate()
@@ -74,14 +78,16 @@ export default function PdfViewer() {
   const diminta = Math.max(1, Math.floor(Number(hlm)) || 1)
   const halaman = total ? Math.min(diminta, total) : diminta
   const [ketik, setKetik] = useState(String(halaman))
-  useTitle(`PDF hlm ${halaman}`)
+  useTitle(`${peraturan.judul}, hlm ${halaman}`)
+  // dibuka langsung lewat alamat PDF: tidak ada penyedia data yang menutup splash
+  useEffect(() => tutupSplash(), [])
 
   // buka dokumen (dipakai ulang bila sudah pernah dimuat)
   useEffect(() => {
     setDoc(null)
     setStatus('memuat')
     let batal = false
-    muatDokumen()
+    muatDokumen(peraturan.berkas)
       .then((d) => {
         if (batal) return
         setDoc(d)
@@ -93,7 +99,7 @@ export default function PdfViewer() {
     return () => {
       batal = true
     }
-  }, [coba])
+  }, [coba, peraturan.berkas])
 
   // lebar tempat halaman, agar halaman selalu pas dengan layar
   useEffect(() => {
@@ -187,9 +193,9 @@ export default function PdfViewer() {
   const sarankanPutar = miring && putar === 0 && typeof window !== 'undefined' && window.matchMedia('(orientation: portrait)').matches
 
   const q = kode ? `?k=${encodeURIComponent(kode)}` : ''
-  const ke = (n: number) => nav(`/pdf/${Math.min(Math.max(1, n), total || n)}${q}`, { replace: true })
+  const ke = (n: number) => nav(`/pdf/${peraturan.id}/${Math.min(Math.max(1, n), total || n)}${q}`, { replace: true })
   // replace: tombol Kembali membawa pengguna keluar dari penampil, bukan mundur halaman demi halaman
-  const kembali = () => (key !== 'default' ? nav(-1) : nav(kode ? `/telusur/${kode}` : '/', { replace: true }))
+  const kembali = () => (key !== 'default' ? nav(-1) : nav(peraturan.kembaliKe(kode), { replace: true }))
 
   /**
    * Terapkan zoom z dengan titik fokus (fx,fy; koordinat layar) yang tetap di tempatnya, atau pindah ke (nx,ny)
@@ -372,8 +378,8 @@ export default function PdfViewer() {
           Kembali
         </button>
         <div className="pdfv-judul">
-          <b>Pergub Bali 64/2023</b>
-          {kode && <span className="mono">{kode}</span>}
+          <b>{peraturan.judul}</b>
+          {kode && <span className="mono">{peraturan.labelRujukan(kode)}</span>}
         </div>
         <form className="pdfv-nav" onSubmit={lompat}>
           <button type="button" className="ikon" disabled={halaman <= 1} onClick={() => ke(halaman - 1)} aria-label="Halaman sebelumnya">

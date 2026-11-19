@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node src/search.test.ts",
+    "test": "node src/search.test.ts && node src/uu.test.ts",
     "data": "node scripts/copy-data.mjs"
   },
   "dependencies": {

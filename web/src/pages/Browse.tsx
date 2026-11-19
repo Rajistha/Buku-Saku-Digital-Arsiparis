@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BidangIcon, Icon } from '../components/Icon.tsx'
 import { CopyButton, pushRecent, useTitle } from '../components/ui.tsx'
 import { PdfLink } from '../components/PdfLink.tsx'
+import { dasarKeamanan, dasarRetensi, type DasarUu } from '../dasarUu.ts'
 import { AKSES, ancestors, hasChildren, KEAMANAN, nasibOf, parentOf, type Data, type Item } from '../data.ts'
 import { useData } from '../state.tsx'
 
@@ -21,6 +22,21 @@ function totalTahun(ra?: string, ri?: string): string | null {
   const a = /^(\d+) Tahun$/.exec(ra ?? '')
   const i = /^(\d+) Tahun$/.exec(ri ?? '')
   return a && i ? `${Number(a[1]) + Number(i[1])} tahun` : null
+}
+
+/** Rujukan ke pasal UU 43/2009 yang menjadi dasar isi Lampiran. */
+function DasarHukum({ dasar }: { dasar: DasarUu[] }) {
+  if (!dasar.length) return null
+  return (
+    <div className="dasar-uu">
+      <span>Dasar hukum, UU 43/2009</span>
+      {dasar.map((x) => (
+        <Link key={x.pasal} to={`/uu-43-2009/pasal/${x.pasal}`} className="link">
+          {x.teks}
+        </Link>
+      ))}
+    </div>
+  )
 }
 
 function Keamanan({ it, d }: { it: Item; d: Data }) {
@@ -57,6 +73,7 @@ function Keamanan({ it, d }: { it: Item; d: Data }) {
               Lampiran II · hlm {at.hs} PDF
             </PdfLink>
           )}
+          <DasarHukum dasar={dasarKeamanan(at)} />
         </>
       ) : (
         <span className="muted">
@@ -128,6 +145,7 @@ function Retensi({ it, d }: { it: Item; d: Data }) {
           Lampiran III · hlm {at.hr} PDF
         </PdfLink>
       )}
+      <DasarHukum dasar={dasarRetensi(at)} />
     </div>
   )
 }
@@ -323,6 +341,7 @@ export default function Browse() {
                     key={it.k}
                     to={`/telusur/${it.k}`}
                     className={'it' + (dipilih ? ' sel' : dijalur ? ' path' : '')}
+                    title={it.n}
                     data-aktif={dijalur ? '1' : undefined}
                     aria-current={dipilih ? 'true' : undefined}
                   >
